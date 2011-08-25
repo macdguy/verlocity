@@ -1,0 +1,46 @@
+﻿/*
+	=========================================
+			   Verlocity Engine
+	=========================================
+	|	Developed by Macklin Guy, 2011.		|
+	|										|
+	|										|
+	-----------------------------------------
+	verSave.as
+	-----------------------------------------
+	This class saves/loads local data for storage.
+	You can easily save/load player data such as progress, score, or settings.
+*/
+
+package VerlocityEngine.components
+{
+	import VerlocityEngine.VerlocityLanguage;
+
+	public final class verSave extends Object
+	{
+		//********* VERLOCITY COMPONENT HEADER *********//
+		/************************************************/
+		public function IsValid():Boolean { return wasCreated; }
+		private var wasCreated:Boolean;
+		
+		public function verSave():void
+		{
+			if ( wasCreated ) { throw new Error( VerlocityLanguage.T( "ComponentLoadFail" ) ); return; } wasCreated = true;
+			Construct();
+		}
+		/************************************************/
+		/************************************************/
+		
+		/*
+		 ****************COMPONENT VARS******************
+		*/
+		
+		/*
+		 **************COMPONENT CREATION****************
+		*/
+		private function Construct():void
+		{
+		}
+
+	}
+}
