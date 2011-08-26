@@ -438,7 +438,7 @@ internal class verGUIRealTimeStats extends Sprite
 		if ( !visible ) { return; }
 		
 		var PausedText:String = String( Verlocity.engine.IsPaused );
-		if ( !Verlocity.pause.Pausable ) { PausedText = "disabled"; }
+		if ( !Verlocity.pause.IsPausable ) { PausedText = "disabled"; }
 		
 		statText.text = "FPS: " + Verlocity.stats.FPS + " / " + Verlocity.stage.frameRate +
 		"\nMEM: " + Verlocity.stats.Memory + 

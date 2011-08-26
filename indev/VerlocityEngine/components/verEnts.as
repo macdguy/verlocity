@@ -194,7 +194,7 @@ package VerlocityEngine.components
 			}
 		}
 		
-		public function RemoveAll( bRemoveProtected:Boolean = true ):void
+		public function RemoveAll( bRemoveProtected:Boolean = false ):void
 		{
 			var iLength:int = vEnts.length;
 			if ( iLength <= 0 ) { return; } 

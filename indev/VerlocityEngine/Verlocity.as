@@ -182,13 +182,15 @@ package VerlocityEngine
 		}
 		public static function get IsFullscreen():Boolean { return sStage.displayState == StageDisplayState.FULL_SCREEN; }
 		
-		public static function CleanSlate():void
+		public static function CleanSlate( bRemoveProtected:Boolean = false ):void
 		{
 			sound.StopAll();
-			ents.RemoveAll();
+			ents.RemoveAll( bRemoveProtected );
+			scrFX.RemoveAll( bRemoveProtected );
 			camera.ResetPos();
 			layers.RemoveAll();
 			ui.RemoveAll();
+			soundscape.Stop();
 		}
 
 	}

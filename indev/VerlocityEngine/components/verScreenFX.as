@@ -114,7 +114,7 @@ package VerlocityEngine.components
 		/*------------------ PRIVATE ------------------*/
 
 		/*------------------ PUBLIC -------------------*/
-		public function Create( scrFX:verBScrFX, bOnTop:Boolean = false, bProtected:Boolean = false )
+		public function Create( scrFX:verBScrFX, bOnTop:Boolean = false, bProtected:Boolean = false ):*
 		{
 			vScrFX[ vScrFX.length ] = scrFX;
 			
@@ -135,7 +135,7 @@ package VerlocityEngine.components
 			return scrFX;
 		}
 		
-		public function RemoveAll( bRemoveProtected:Boolean = true ):void
+		public function RemoveAll( bRemoveProtected:Boolean = false ):void
 		{
 			var iLength:int = vScrFX.length;
 			if ( iLength <= 0 ) { return; } 

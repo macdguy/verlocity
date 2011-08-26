@@ -195,6 +195,8 @@ package VerlocityEngine.components
 			Verlocity.Trace( "UI", VerlocityLanguage.T( "GenericRemoveAll" ) );
 		}
 		
+		// The following functions do not work as intended.
+		// This is a known bug and is being worked on.
 		public function NextUIButton():void
 		{
 			if ( uiCurrentButton )

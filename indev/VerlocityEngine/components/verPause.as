@@ -247,13 +247,29 @@ package VerlocityEngine.components
 			vPauseMenu.push( new Array( sName, fFunction ) );
 		}
 		
+		public function RemovePauseMenuItem( sName:String ):void
+		{
+			var iLength:int = vPauseMenu.length;
+			if ( iLength == 0 ) { return; }
+
+			for ( var i:int = 0; i < iLength; i++ )
+			{
+				if ( vPauseMenu[i][0] == sName )
+				{
+					delete vPauseMenu[i];
+					vPauseMenu[i] = null;
+					vPauseMenu.splice( i, 1 );				
+				}
+			}
+		}
+		
 		public function ClearPauseMenuItems():void
 		{
 			vPauseMenu.length = 0;
 		}
 		
 		public function get PauseMenu():Vector.<Array> { return vPauseMenu; }
-		public function get Pausable():Boolean { return bPauseEnabled; }
+		public function get IsPausable():Boolean { return bPauseEnabled; }
 	}
 }
 
