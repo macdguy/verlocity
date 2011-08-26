@@ -150,15 +150,14 @@ package VerlocityEngine.components
 
 
 		/*------------------ PUBLIC -------------------*/
-		public function Create( ent:Class )
+		public function Create( ent:verBEnt ):*
 		{
-			var newEnt:verBEnt = new ent();
-			Register( newEnt );
+			Register( ent );
 
-			return newEnt;
+			return ent;
 		}
 
-		public function RegisterContained( disp:verBLayer ):void
+		public function RegisterContained( disp:MovieClip ):void
 		{
 			if ( disp.numChildren == 0 ) { return; }
 
