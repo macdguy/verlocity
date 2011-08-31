@@ -55,10 +55,10 @@ package VerlocityEngine.components
 		private var sCameraViewArea:Shape;
 		private var pCenter:Point;
 		
-		private var ctColor:ColorTransform = new ColorTransform( 1, 1, 1, 1 );
-		private var cTint:Color = new Color();
-		private var aColor:AdjustColor = new AdjustColor();
-		private var cmFilter:ColorMatrixFilter = new ColorMatrixFilter();
+		private var ctColor:ColorTransform;
+		private var cTint:Color;
+		private var aColor:AdjustColor;
+		private var cmFilter:ColorMatrixFilter;
 
 		private var pGoto:Point;
 		private var entFollow:verBEnt;
@@ -98,7 +98,7 @@ package VerlocityEngine.components
 		{
 			if ( pGoto )
 			{
-				if ( sprCamera.x != pCenter.x - pGoto.x && sprCamera.y != pCenter.y - pGoto.y )
+				if ( sprCamera.x != pCenter.x - pGoto.x || sprCamera.y != pCenter.y - pGoto.y )
 				{
 					if ( bEasing )
 					{
@@ -174,7 +174,7 @@ package VerlocityEngine.components
 			}
 			else
 			{
-				if ( sprCamera.x != 0 || sprCamera.y != 0 )
+				if ( sprCamera.x != pBeforeShake.x || sprCamera.y != pBeforeShake.y )
 				{
 					sprCamera.x -= mathHelper.Ease( sprCamera.x, pBeforeShake.x, 30 );
 					sprCamera.y -= mathHelper.Ease( sprCamera.y, pBeforeShake.y, 30 );
@@ -206,6 +206,22 @@ package VerlocityEngine.components
 			{
 				sprCamera.removeChildAt( i );
 			}
+		}
+		
+		public function Reset():void
+		{
+			ResetMask();
+			ResetColor();
+			RemoveTint();
+			RemoveFilters();
+			
+			StopFollowing();
+			StopMoveTo();
+			StopShaking();
+
+			Zoom( 1 );
+			Rotate( 0 );
+			ResetPos();
 		}
 
 		public function SetPos( iPosX:int, iPosY:int ):void
@@ -267,8 +283,16 @@ package VerlocityEngine.components
 			iShakeDuration = Verlocity.engine.CurTime() + iDuration;
 		}
 		
+		public function StopShaking():void
+		{
+			iShakeDuration = -1;
+		}
+		
 		public function AdjustColors( nBrightness:Number, nContrast:Number, nHue:Number, nSaturation:Number ):void
 		{
+			if ( !aColor ) { aColor = new AdjustColor(); }
+			if ( !cmFilter ) { cmFilter = new ColorMatrixFilter() }
+			
 			aColor.brightness = nBrightness;
 			aColor.contrast = nContrast;
 			aColor.hue = nHue;
@@ -281,11 +305,15 @@ package VerlocityEngine.components
 		
 		public function RemoveFilters():void
 		{
+			aColor = null;
+			cmFilter = null;
 			sprCamera.filters = null;
 		}
 
 		public function SetColor( r:int, g:int, b:int, alpha:Number = 1 ):void
 		{
+			if ( !ctColor ) { ctColor = new ColorTransform(); }
+
 			var newColor:uint = colorHelper.RGBtoHEX( r, g, b );
 
 			ctColor.color = newColor;
@@ -293,8 +321,16 @@ package VerlocityEngine.components
 			sprCamera.transform.colorTransform = ctColor;
 		}
 		
+		public function ResetColor():void
+		{
+			ctColor = null;
+			sprCamera.transform.colorTransform = null;
+		}
+		
 		public function SetTint( amount:Number, r:int = 255, g:int = 255, b:int = 255 ):void
 		{
+			if ( !cTint ) { cTint = new Color(); }
+
 			var newColor:uint = colorHelper.RGBtoHEX( r, g, b );
 			
 			cTint.setTint( newColor, amount );
@@ -304,7 +340,8 @@ package VerlocityEngine.components
 		public function RemoveTint():void
 		{
 			cTint.alphaMultiplier = 0;
-			sprCamera.transform.colorTransform = cTint;
+			cTint = null;
+			sprCamera.transform.colorTransform = null;
 		}
 		
 		public function SetMask( mask:DisplayObject ):void

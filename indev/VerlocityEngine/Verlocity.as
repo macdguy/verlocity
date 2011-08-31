@@ -187,7 +187,7 @@ package VerlocityEngine
 			sound.StopAll();
 			ents.RemoveAll( bRemoveProtected );
 			scrFX.RemoveAll( bRemoveProtected );
-			camera.ResetPos();
+			camera.Reset();
 			layers.RemoveAll();
 			ui.RemoveAll();
 			soundscape.Stop();
