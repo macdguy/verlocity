@@ -6,7 +6,7 @@
 	|										|
 	|										|
 	-----------------------------------------
-	verScreen.as
+	verLayers.as
 	-----------------------------------------
 	This class stores and handles all the layers.
 */
@@ -14,6 +14,7 @@ package VerlocityEngine.components
 {
 	import flash.display.DisplayObject;
 	import flash.display.MovieClip;
+	import flash.display.Shape;
 	import flash.display.Sprite;
 	import flash.geom.ColorTransform;
 
@@ -42,6 +43,9 @@ package VerlocityEngine.components
 		*/
 		internal var layerVerlocity:Sprite;
 		internal var layerUI:Sprite;
+
+		internal var layerContained:Sprite;
+		internal const sCutoff:Shape = new Shape();
 		internal var layerScrFX:Sprite;
 
 		internal var layerMain:Sprite;
@@ -70,27 +74,40 @@ package VerlocityEngine.components
 				layerUI.graphics.endFill();
 			Verlocity.stage.addChildAt( layerUI, 0 );
 
+			// Container layer
+			layerContained = new Sprite();
+			Verlocity.stage.addChildAt( layerContained, 0 );
+			
+			// Cutoff mask
+			sCutoff.graphics.beginFill( 0, 0 );
+				sCutoff.graphics.drawRect( 0, 0, Verlocity.ScrW, Verlocity.ScrH );
+			sCutoff.graphics.endFill();
+			Verlocity.stage.addChildAt( sCutoff, 0 );
+
+			// Mask everything
+			layerContained.mask = sCutoff;
+
 			// ScreenFX layer for verScreenFX
 			layerScrFX = new Sprite();
-			Verlocity.stage.addChildAt( layerScrFX, 0 );
+			layerContained.addChildAt( layerScrFX, 0 );
 
 
 			// -- START OF USER CONTROLLED --
 
 				// Main layer for anything not part of the camera.
 				layerMain = new Sprite();
-				Verlocity.stage.addChildAt( layerMain, 0 );
+				layerContained.addChildAt( layerMain, 0 );
 
 				// verCamera support.
-				Verlocity.stage.addChildAt( Verlocity.camera.Get(), 0 );
-				Verlocity.stage.addChildAt( Verlocity.camera.GetView(), 0 );
+				layerContained.addChildAt( Verlocity.camera.Get(), 0 );
+				layerContained.addChildAt( Verlocity.camera.GetView(), 0 );
 
 			// -- END OF USER CONTROLLED --
 
 
 			// Layer for states (ie. cutscenes).
 			layerState = new Sprite();
-			Verlocity.stage.addChildAt( layerState, 0 );
+			layerContained.addChildAt( layerState, 0 );
 
 			// Background
 			sprBackground = new Sprite();
@@ -193,14 +210,6 @@ package VerlocityEngine.components
 			sprBackground.graphics.beginFill( uiColor, nAlpha );
 				sprBackground.graphics.drawRect( 0, 0, Verlocity.ScrW, Verlocity.ScrH );
 			sprBackground.graphics.endFill();
-		}
-		
-		public function ListAllLayers():void
-		{
-			for ( var i:int = 0; i < Verlocity.stage.numChildren; i++ )
-			{
-				Verlocity.Trace( "Layers", Verlocity.stage.getChildAt( i ).toString() );
-			}
 		}
 		
 		public function SendToTop( layer:verBLayer ):void

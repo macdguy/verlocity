@@ -1,14 +1,51 @@
 ﻿package VerlocityEngine.util
 {
-	/**
-	* 	String Utilities class by Ryan Matsikas, Feb 10 2006
-	*
-	*	Visit www.gskinner.com for documentation, updates and more free code.
-	* 	You may distribute this code freely, as long as this comment block remains intact.
-	*/
-
 	public class stringHelper
 	{
+		public static function BytesToString( bytes:int ):String
+		{
+			var s:Array = [ "bytes", "KB", "MB", "GB" ];
+			var e:Number = Math.floor( Math.log( bytes ) / Math.log( 1024 ) );
+			return ( bytes / Math.pow( 1024, Math.floor( e ) ) ).toFixed( 2 ) + " " + s[e];
+		}
+
+		/*
+			Returns a formatted time string (0.00) based on seconds given.
+		*/
+		public static function FormattedTime( iSeconds:int ):String
+		{
+			if ( iSeconds < 0 ) { return "00:00"; }
+
+			var nMinutes:Number = iSeconds / 60;
+			nMinutes = Math.floor( nMinutes );
+
+			var nSeconds:Number = iSeconds % 60;
+			nSeconds = Math.floor( nSeconds );
+
+			var mString:String = nMinutes < 10 ? "0" + nMinutes : "" + nMinutes;
+			var sString:String = nSeconds < 10 ? "0" + nSeconds : "" + nSeconds;	
+
+			return mString + ":" + sString;
+		}
+
+		/*
+			Returns a formatted number.  Example: 3000 becomes 3,000
+		*/
+		public static function FormattedNumber( iNumber:int ):String
+		{
+			var sNumber:String = iNumber.toString();
+			return sNumber.replace( /(\d)(?=(\d{3})+$)/g, "$1," )
+		}
+
+
+		/**********************************/
+		/**
+		* 	String Utilities class by Ryan Matsikas, Feb 10 2006
+		*
+		*	Visit www.gskinner.com for documentation, updates and more free code.
+		* 	You may distribute this code freely, as long as this comment block remains intact.
+		*/
+		/**********************************/
 
 		/**
 		*	Returns everything after the first occurrence of the provided character in the string.

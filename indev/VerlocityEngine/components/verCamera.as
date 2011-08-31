@@ -16,6 +16,7 @@ package VerlocityEngine.components
 	import flash.display.DisplayObject;
 	import flash.display.Shape;
 	import flash.display.Sprite;
+	import VerlocityEngine.base.ents.verBEnt;
 
 	import flash.geom.Rectangle;
 	import flash.geom.Matrix;
@@ -55,6 +56,11 @@ package VerlocityEngine.components
 		private var ctColor:ColorTransform = new ColorTransform( 1, 1, 1, 1 );
 		private var cTint:Color = new Color();
 		
+		private var pGoto:Point;
+		private var entFollow:verBEnt;
+		private var bEasing:Boolean;
+		private var iEasingSpeed:int;
+		
 		private var iShakeDuration:int;
 		private var nShakeForce:Number;
 		private var pBeforeShake:Point;
@@ -75,6 +81,9 @@ package VerlocityEngine.components
 			sprCamera.mask = sCameraViewArea;
 			
 			pCenter = new Point( sCameraViewArea.width / 2, sCameraViewArea.height / 2 );
+
+			bEasing = true;
+			iEasingSpeed = 30;
 		}
 
 
@@ -83,7 +92,48 @@ package VerlocityEngine.components
 		*/
 		public function Think():void
 		{
-			HandleShake();
+			if ( pGoto )
+			{
+				if ( sprCamera.x != pCenter.x - pGoto.x && sprCamera.y != pCenter.y - pGoto.y )
+				{
+					if ( bEasing )
+					{
+						sprCamera.x -= mathHelper.Ease( sprCamera.x, pCenter.x - pGoto.x, iEasingSpeed );
+						sprCamera.y -= mathHelper.Ease( sprCamera.y, pCenter.y - pGoto.y, iEasingSpeed );
+					}
+					else
+					{
+						sprCamera.x = mathHelper.Approach( sprCamera.x, pCenter.x - pGoto.x, 2 );
+						sprCamera.y = mathHelper.Approach( sprCamera.y, pCenter.y - pGoto.y, 2 );
+					}
+				}
+				else
+				{
+					pGoto = null;
+				}
+
+				return;
+			}
+			
+			if ( entFollow )
+			{
+				if ( bEasing )
+				{
+					sprCamera.x -= mathHelper.Ease( sprCamera.x, pCenter.x - entFollow.absX, iEasingSpeed );
+					sprCamera.y -= mathHelper.Ease( sprCamera.y, pCenter.y - entFollow.absY, iEasingSpeed );
+				}
+				else
+				{
+					SetPos( entFollow.absX, entFollow.absY );
+				}
+
+				return;
+			}
+
+			if ( pBeforeShake )
+			{
+				HandleShake();
+			}
 		}
 		
 		
@@ -97,8 +147,6 @@ package VerlocityEngine.components
 		
 		private function HandleShake():void
 		{
-			if ( !pBeforeShake ) { return; }
-
 			if ( iShakeDuration > Verlocity.engine.CurTime() )
 			{
 				if ( Math.random() > .5 )
@@ -169,6 +217,30 @@ package VerlocityEngine.components
 		public function ResetPos():void
 		{
 			sprCamera.x = 0; sprCamera.y = 0;
+		}
+		
+		public function Follow( ent:verBEnt, bEase:Boolean = true, iEaseSpeed:int = 30 ):void
+		{
+			entFollow = ent;
+			bEasing = bEase;
+			iEasingSpeed = iEaseSpeed;
+		}
+		
+		public function StopFollowing():void
+		{
+			entFollow = null;
+		}
+		
+		public function MoveTo( pPoint:Point, bEase:Boolean = true, iEaseSpeed:int = 30 ):void
+		{
+			pGoto = pPoint;
+			bEasing = bEase;
+			iEasingSpeed = iEaseSpeed;
+		}
+		
+		public function StopMoveTo():void
+		{
+			pGoto = null;
 		}
 		
 		public function Rotate( nRot:Number ):void

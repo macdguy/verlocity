@@ -247,6 +247,28 @@ package VerlocityEngine.components
 			stVolume.volume = nVolume;
 			SoundMixer.soundTransform = stVolume;
 		}
+
+		public function SetVolumeGroup( sGroup:String, nSetVolume:Number ):void
+		{
+			var iLength:int = CountAll();
+			if ( iLength <= 0 ) { return; } 
+
+			var i:int = iLength - 1;
+			var refCurrent:verBSound;
+
+			while( i >= 0 )
+			{
+				refCurrent = vSounds[i];
+
+				if ( refCurrent.GetGroup() == sGroup )
+				{
+					refCurrent.SetVolume( nSetVolume );
+				}
+
+				refCurrent = null;
+				i--;
+			}
+		}
 		
 		public function GetVolume():Number
 		{
@@ -297,31 +319,8 @@ package VerlocityEngine.components
 
 			VerlocityMessages.Create( VerlocityLanguage.T( "VerlocityVolumeUnmute" ) );
 		}
-		
+
 		public function get IsMuted():Boolean { return bIsMuted; }
-
-
-		public function SetVolumeGroup( sGroup:String, nSetVolume:Number ):void
-		{
-			var iLength:int = CountAll();
-			if ( iLength <= 0 ) { return; } 
-
-			var i:int = iLength - 1;
-			var refCurrent:verBSound;
-
-			while( i >= 0 )
-			{
-				refCurrent = vSounds[i];
-
-				if ( refCurrent.GetGroup() == sGroup )
-				{
-					refCurrent.SetVolume( nSetVolume );
-				}
-
-				refCurrent = null;
-				i--;
-			}
-		}
 	}
 }
 

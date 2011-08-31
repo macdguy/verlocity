@@ -93,7 +93,7 @@ package VerlocityEngine
 			}
 		}
 		
-		private function CreateLoadGUI():void
+		protected function CreateLoadGUI():void
 		{
 			// Loading text
 			tfLoadText = new TextField();
@@ -169,7 +169,7 @@ package VerlocityEngine
 			addChild( sprLoadingBars );
 		}
 
-		private function UpdateLoadGUI():void
+		protected function UpdateLoadGUI():void
 		{
 			iProgress = Math.round( ( loaderInfo.bytesLoaded / loaderInfo.bytesTotal ) * 100 );
 
@@ -180,7 +180,7 @@ package VerlocityEngine
 			
 			tfLoadText.alpha = ( Math.sin( getTimer() / 500 ) * 1 ) + 1.5;
 			
-			tfLoadBytes.text = BytesToString( loaderInfo.bytesLoaded ) + " / " + BytesToString( loaderInfo.bytesTotal );
+			//tfLoadBytes.text = BytesToString( loaderInfo.bytesLoaded ) + " / " + BytesToString( loaderInfo.bytesTotal );
 			tfLoadBytes.width = tfLoadBytes.textWidth + 5;
 			tfLoadBytes.x = ( stage.stageWidth / 2 ) - ( tfLoadBytes.width / 2 );
 			
@@ -195,15 +195,13 @@ package VerlocityEngine
 			loadingGraphicWheel.filters = [ fBlur ];
 		}
 		
-		private function RemoveLoadGUI():void
+		protected function RemoveLoadGUI():void
 		{
-			removeChild( tfLoadText );
-			removeChild( tfLoadPercent );
-			removeChild( tfLoadBytes );
-			removeChild( sprLoadingBars );
-			removeChild( sprLoadingBarsUnder );
-			removeChild( sprLoadingFill );
-			removeChild( loadingGraphicWheel );
+			for ( var i:int = 0; i < numChildren; i++ )
+			{
+				removeChildAt( i );
+				i--;
+			}
 
 			tfLoadText = null; 
 			tfLoadPercent = null; 
@@ -212,15 +210,9 @@ package VerlocityEngine
 			sprLoadingBarsUnder = null;
 			sprLoadingFill = null;
 			loadingGraphicWheel = null;
+
 			fBlur = null;
 			fGlow = null;
-		}
-		
-		private function BytesToString( bytes:int ):String
-		{
-			var s:Array = [ "bytes", "KB", "MB", "GB" ];
-			var e:Number = Math.floor( Math.log( bytes ) / Math.log( 1024 ) );
-			return ( bytes / Math.pow( 1024, Math.floor( e ) ) ).toFixed( 2 ) + " " + s[e];
 		}
 	}
 }

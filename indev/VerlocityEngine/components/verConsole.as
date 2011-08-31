@@ -25,6 +25,7 @@ package VerlocityEngine.components
 	import VerlocityEngine.Verlocity;
 	import VerlocityEngine.VerlocityLanguage;
 	import VerlocityEngine.VerlocityUtil;
+	import VerlocityEngine.util.stringHelper;
 
 	public final class verConsole extends Object
 	{
@@ -350,6 +351,11 @@ package VerlocityEngine.components
 		/*------------------ PUBLIC -------------------*/		
 		public function Output( sOutput:String, sCaller:String = null ):void
 		{
+			if ( Verlocity.engine )
+			{
+				taOutput.appendText( stringHelper.FormattedTime( Verlocity.engine.CurTime() / 1000 ) + " | " );
+			}
+
 			if ( sCaller )
 			{
 				sCaller = sCaller.toUpperCase();
@@ -370,10 +376,7 @@ package VerlocityEngine.components
 			objCommands[sCommand] = new Array ( fFunction, sDesc );
 		}
 		
-		public function IsEnabled():Boolean
-		{
-			return bIsEnabled;
-		}
+		public function get IsEnabled():Boolean { return bIsEnabled; }
 
 	}
 }

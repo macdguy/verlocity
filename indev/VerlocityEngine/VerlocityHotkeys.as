@@ -62,7 +62,7 @@ package VerlocityEngine
 		/*------------------ PRIVATE -------------------*/
 		private static function HandleKeys( ke:KeyboardEvent ):void
 		{
-			if ( Verlocity.console && Verlocity.console.IsEnabled() ) { return; }
+			if ( Verlocity.console && Verlocity.console.IsEnabled ) { return; }
 
 			if ( Get( "VerlocityFullscreen" ) == ke.keyCode )
 			{
