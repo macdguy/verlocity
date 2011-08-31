@@ -30,6 +30,9 @@ package VerlocityEngine.components
 	
 	import flash.display.Sprite;
 	import flash.utils.setTimeout;
+	
+	import flash.media.SoundMixer;
+	import VerlocityEngine.util.mathHelper;
 
 	public final class verStates extends Object
 	{
@@ -154,7 +157,6 @@ package VerlocityEngine.components
 		{
 			Verlocity.Trace( "States", "Playing Verlocity splash.  Thanks for your support!" );
 
-			state.stop();
 			bSplashed = true; // we've played the splash, don't do it again.
 
 			// Add the splash animation to screen.
@@ -169,13 +171,25 @@ package VerlocityEngine.components
 			// Hold the first state for a bit.
 			FirstState = new Array();
 			FirstState[0] = state; FirstState[1] = bAdd; FirstState[2] = layer;
+			state = null;
 			
 			// Disable pausing
 			Verlocity.pause.Disable();
 		}
 		
-		private function EndSplash():void
+		internal function SkipSplash():void
 		{
+			if ( mcSplash )
+			{
+				mcSplash.gotoAndPlay( mathHelper.Clamp( mcSplash.currentFrame + 4, 1, mcSplash.totalFrames - 1 ) );
+			}
+		}
+		
+		internal function EndSplash():void
+		{
+			// Stop the sound
+			SoundMixer.stopAll();
+
 			// Remove the splash.
 			Verlocity.layers.layerVerlocity.removeChild( mcSplash );
 			mcSplash.stop(); mcSplash = null;
@@ -194,6 +208,9 @@ package VerlocityEngine.components
 		/*------------------ PUBLIC -------------------*/
 		public function Set( newState:verBState, bAdd:Boolean = false, layer:verBLayer = null ):void
 		{
+			// Make sure we have keyboard controls.
+			Verlocity.input.ForceFocus();
+
 			// Handle splash
 			if ( VerlocitySettings.SHOW_SPLASH )
 			{
@@ -241,8 +258,6 @@ package VerlocityEngine.components
 			newState.BeginState();
 
 			CurrentState = newState;
-
-			Verlocity.input.ForceFocus();
 
 			Verlocity.Trace( "States", "====Set state to " + newState + "====" );
 		}

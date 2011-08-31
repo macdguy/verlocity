@@ -59,7 +59,7 @@
 			Verlocity.stage.addEventListener( MouseEvent.MOUSE_MOVE, MouseMove );
 			Verlocity.stage.addEventListener( MouseEvent.CLICK, MouseClick );
 			Verlocity.stage.addEventListener( MouseEvent.MOUSE_DOWN, MouseDown );
-			Verlocity.stage.addEventListener( MouseEvent.MOUSE_UP, MouseUp );		
+			Verlocity.stage.addEventListener( MouseEvent.MOUSE_UP, MouseUp );
 		}
 
 		/*
@@ -88,9 +88,14 @@
 			aComboKeys.unshift( ke.keyCode );
 			aComboKeys.length = INPUT_COMBOAMT;
 
-			if ( Verlocity.state && Verlocity.state.Get() )
+			if ( Verlocity.state )
 			{
-				Verlocity.state.Get().KeyInput( ke.keyCode );
+				Verlocity.state.SkipSplash();
+				
+				if ( Verlocity.state.Get() )
+				{
+					Verlocity.state.Get().KeyInput( ke.keyCode );
+				}
 			}
 		}
 

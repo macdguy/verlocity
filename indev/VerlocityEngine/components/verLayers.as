@@ -67,17 +67,17 @@ package VerlocityEngine.components
 			layerVerlocity = new Sprite();
 			Verlocity.stage.addChildAt( layerVerlocity, 0 );
 
+			// Container layer
+			layerContained = new Sprite();
+			Verlocity.stage.addChildAt( layerContained, 0 );
+
 			// UI layer for verUI
 			layerUI = new Sprite();
 				layerUI.graphics.beginFill( 0x000000, 0 );
 					layerUI.graphics.drawRect( 0, 0, Verlocity.ScrW, Verlocity.ScrH );
 				layerUI.graphics.endFill();
-			Verlocity.stage.addChildAt( layerUI, 0 );
+			layerContained.addChildAt( layerUI, 0 );
 
-			// Container layer
-			layerContained = new Sprite();
-			Verlocity.stage.addChildAt( layerContained, 0 );
-			
 			// Cutoff mask
 			sCutoff.graphics.beginFill( 0, 0 );
 				sCutoff.graphics.drawRect( 0, 0, Verlocity.ScrW, Verlocity.ScrH );

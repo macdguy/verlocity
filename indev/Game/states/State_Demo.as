@@ -15,7 +15,7 @@
 		// Called after the state is spawned.
 		public override function BeginState():void
 		{
-			var demo:Ent_Demo = Verlocity.ents.Create( new Ent_Demo() );
+			var demo:Ent_Demo = Verlocity.ents.Create( Ent_Demo );
 				demo.SetPos( Verlocity.ScrW / 2, Verlocity.ScrH / 2 );
 			demo.Spawn( "Demo" );
 		}

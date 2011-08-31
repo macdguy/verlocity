@@ -150,11 +150,13 @@ package VerlocityEngine.components
 
 
 		/*------------------ PUBLIC -------------------*/
-		public function Create( ent:verBEnt ):*
+		public function Create( entClass:Class ):*
 		{
-			Register( ent );
+			var newEnt:verBEnt = new entClass();
 
-			return ent;
+			Register( newEnt );
+
+			return newEnt;
 		}
 
 		public function RegisterContained( disp:MovieClip ):void

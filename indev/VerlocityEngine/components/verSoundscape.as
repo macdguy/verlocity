@@ -21,6 +21,7 @@ package VerlocityEngine.components
 	import VerlocityEngine.VerlocityLanguage;
 
 	import VerlocityEngine.util.mathHelper;
+	import flash.utils.getQualifiedClassName;
 	
 	public final class verSoundscape extends Object
 	{
@@ -40,6 +41,11 @@ package VerlocityEngine.components
 		 ****************COMPONENT VARS******************
 		*/
 		private var scCurrent:verBSoundscape;
+		private var scNext:verBSoundscape;
+
+		private var nCurVolume:Number;		
+		private var bFadeIn:Boolean;
+		private var bFadeOut:Boolean;
 
 
 		/*
@@ -47,9 +53,10 @@ package VerlocityEngine.components
 		*/
 		public function Think():void 
 		{
-			if ( !scCurrent ) { return; }
+			HandleFading();
 
-			if ( !scCurrent.SoundGroups || scCurrent.SoundGroups.length == 0 ) { return; }
+
+			if ( !scCurrent || !scCurrent.SoundGroups || scCurrent.SoundGroups.length == 0 ) { return; }
 			
 			var curSoundGroup:verBSoundGroup;
 			var iRand:int = 0;
@@ -85,10 +92,43 @@ package VerlocityEngine.components
 		*/
 		
 		/*------------------ PRIVATE ------------------*/
-		private function FadeIn( scSoundscape:verBSoundscape ):void
+		private function HandleFading():void
+		{
+			if ( bFadeOut )
+			{
+				if ( nCurVolume > 0 )
+				{
+					nCurVolume -= 0.025;
+					Verlocity.sound.SetVolumeGroup( "verSoundscape", nCurVolume );
+				}
+				else
+				{
+					bFadeOut = false;
+					SetNext( scNext );
+				}
+			}
+			
+			if ( bFadeIn )
+			{
+				if ( nCurVolume < 1 )
+				{
+					nCurVolume += 0.025;
+					Verlocity.sound.SetVolumeGroup( "verSoundscape", nCurVolume );
+				}
+				else
+				{
+					bFadeIn = false;
+				}
+			}
+		}
+
+		private function SetNext( scSoundscape:verBSoundscape ):void
 		{
 			if ( !scSoundscape.SoundGroups || scSoundscape.SoundGroups.length == 0 ) { return; }
-			
+	
+			bFadeIn = true;
+			scCurrent = scSoundscape;
+
 			var curSoundGroup:verBSoundGroup;
 			var sIndex:String;
 
@@ -109,24 +149,30 @@ package VerlocityEngine.components
 				
 				curSoundGroup = null;
 			}
-		}
 
-		private function FadeOut( scSoundscape:verBSoundscape ):void { }
+			Verlocity.Trace( "Soundscape", "Setting new soundscape " + scNext );
+		}
+		
+		public function GetName():String
+		{
+			return scCurrent ? getQualifiedClassName( scCurrent ) : "None";
+		}
 
 
 		/*------------------ PUBLIC -------------------*/
 		public function Set( scNew:verBSoundscape ):void
 		{
+			scNext = scNew;
+
 			if ( scCurrent )
 			{
-				FadeOut( scCurrent );
-				scCurrent = null;
+				bFadeOut = true;
+				Verlocity.Trace( "Soundscape", "Fading out current soundscape " + scCurrent );
 			}
-
-			scCurrent = scNew;
-			FadeIn( scCurrent );
-			
-			Verlocity.Trace( "Soundscape", "Setting new soundscape " + scCurrent );			
+			else
+			{
+				SetNext( scNext );
+			}			
 		}
 		
 		public function Stop():void

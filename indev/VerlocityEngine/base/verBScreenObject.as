@@ -143,16 +143,19 @@
 			nFadeSpeed = NaN;
 		}
 
-		public function SetColor( r:int, g:int, b:int, alpha:Number = 1 ):void
+		public function SetColor( newColor:uint, nAlpha:Number = 1 ):void
 		{
-			var newColor:uint = colorHelper.RGBtoHEX( r, g, b );
-
 			ctColor.color = newColor;
 			ctColor.alphaMultiplier = alpha;
 			transform.colorTransform = ctColor;
 
 			uiColor = newColor;
 			newColor = NaN;
+		}
+
+		public function SetColorRGB( r:int, g:int, b:int, nAlpha:Number = 1 ):void
+		{
+			SetColor( colorHelper.RGBtoHEX( r, g, b ), nAlpha );
 		}
 
 		public function GetColor():uint

@@ -449,6 +449,7 @@ internal class verGUIRealTimeStats extends Sprite
 		"\nEntities: " + Verlocity.ents.CountAll() + 
 		"\nSounds: " + Verlocity.sound.CountAll() +
 		"\nState: " + Verlocity.state.GetName() +
+		"\nSoundscape: " + Verlocity.soundscape.GetName() +
 		"\nBeat: ";
 		
 		// Analyzer	
@@ -465,7 +466,7 @@ internal class verGUIRealTimeStats extends Sprite
 			{
 				if ( nBeat > 0 ) { nBeat -= .05 }
 			}
-			sprAnalyzer.graphics.drawRect( 30, 42, 40 * nBeat, 5 );
+			sprAnalyzer.graphics.drawRect( 30, 55, 40 * nBeat, 5 );
 		sprAnalyzer.graphics.endFill();
 
 		// FFT
@@ -473,7 +474,7 @@ internal class verGUIRealTimeStats extends Sprite
 			var i:int = 0;
 			while ( i < Verlocity.analyzer.GetFrequency().length )
 			{
-				sprAnalyzer.graphics.drawRect( 8 + ( 2 * i ), 75, 1, -10 * Verlocity.analyzer.GetFrequency()[i] );
+				sprAnalyzer.graphics.drawRect( 8 + ( 2 * i ), 80, 1, -10 * Verlocity.analyzer.GetFrequency()[i] );
 				i++;
 			}
 		sprAnalyzer.graphics.endFill();

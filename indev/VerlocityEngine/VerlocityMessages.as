@@ -90,7 +90,7 @@ package VerlocityEngine
 				
 				if ( message )
 				{
-					var iYOffset:int = ( i * 25 ) + 10;
+					var iYOffset:int = ( i * 30 ) + 10;
 					if ( iYOffset != message[0].y )
 					{
 						message[0].y -= mathHelper.Ease( message[0].y, iYOffset, 5 );
@@ -111,7 +111,7 @@ package VerlocityEngine
 		{
 			if ( !VerlocitySettings.SHOW_MESSAGES || !sMessage || sMessage == "" ) { return; }
 
-			var iYOffset:int = ( vMessages.length * 25 ) + 10;
+			var iYOffset:int = ( vMessages.length * 30 ) + 10;
 			
 			var newMessage:verBUIText = new verBUIText();
 				newMessage.SetText( sMessage, messageFormat );

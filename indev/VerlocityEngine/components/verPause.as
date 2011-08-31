@@ -125,14 +125,12 @@ package VerlocityEngine.components
 		
 		private function PauseAnimation( bPause:Boolean ):void
 		{
-			if ( Verlocity.stage.numChildren <= 0 ) { return; }
-
 			var i:int = 0;
-			while ( i < Verlocity.stage.numChildren )
+			while ( i < Verlocity.layers.layerContained.numChildren )
 			{
-				if ( Verlocity.stage.getChildAt( i ) is Sprite )
+				if ( Verlocity.layers.layerContained.getChildAt( i ) is Sprite )
 				{
-					var child:Sprite = Sprite( Verlocity.stage.getChildAt( i ) );
+					var child:Sprite = Sprite( Verlocity.layers.layerContained.getChildAt( i ) );
 
 					var k:int = 0;
 					while ( k < child.numChildren )
