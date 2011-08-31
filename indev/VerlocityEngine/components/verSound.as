@@ -250,6 +250,8 @@ package VerlocityEngine.components
 
 		public function SetVolumeGroup( sGroup:String, nSetVolume:Number ):void
 		{
+			nSetVolume = mathHelper.ClampNum( nSetVolume );
+
 			var iLength:int = CountAll();
 			if ( iLength <= 0 ) { return; } 
 

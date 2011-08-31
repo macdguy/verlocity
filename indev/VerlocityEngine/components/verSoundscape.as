@@ -33,6 +33,7 @@ package VerlocityEngine.components
 		public function verSoundscape():void
 		{
 			if ( wasCreated ) { throw new Error( VerlocityLanguage.T( "ComponentLoadFail" ) ); return; } wasCreated = true;
+			Construct();
 		}
 		/************************************************/
 		/************************************************/
@@ -46,7 +47,15 @@ package VerlocityEngine.components
 		private var nCurVolume:Number;		
 		private var bFadeIn:Boolean;
 		private var bFadeOut:Boolean;
-
+		
+		
+		/*
+		 **************COMPONENT CREATION****************
+		*/
+		private function Construct():void
+		{
+			nCurVolume = Verlocity.sound.GetVolume();
+		}
 
 		/*
 		 ****************COMPONENT LOOP******************
@@ -54,7 +63,6 @@ package VerlocityEngine.components
 		public function Think():void 
 		{
 			HandleFading();
-
 
 			if ( !scCurrent || !scCurrent.SoundGroups || scCurrent.SoundGroups.length == 0 ) { return; }
 			
@@ -77,7 +85,7 @@ package VerlocityEngine.components
 
 					nRandVol = mathHelper.Rand( curSoundGroup.Settings.VolMin, curSoundGroup.Settings.VolMax );
 
-					Verlocity.sound.Create( curSoundGroup.URL + sRand + "." + curSoundGroup.Extension, nRandVol, false, false, "verSoundscape" );
+					Verlocity.sound.Create( curSoundGroup.URL + sRand + "." + curSoundGroup.Extension, nRandVol * Verlocity.sound.GetVolume(), false, false, "verSoundscape" );
 
 					curSoundGroup.Playtime = Verlocity.engine.CurTime() + mathHelper.Rand( curSoundGroup.Settings.TimeMin, curSoundGroup.Settings.TimeMax );
 				}
@@ -98,7 +106,7 @@ package VerlocityEngine.components
 			{
 				if ( nCurVolume > 0 )
 				{
-					nCurVolume -= 0.025;
+					nCurVolume -= 0.005;
 					Verlocity.sound.SetVolumeGroup( "verSoundscape", nCurVolume );
 				}
 				else
@@ -106,19 +114,27 @@ package VerlocityEngine.components
 					bFadeOut = false;
 					SetNext( scNext );
 				}
+				return;
 			}
 			
 			if ( bFadeIn )
 			{
-				if ( nCurVolume < 1 )
+				if ( nCurVolume < Verlocity.sound.GetVolume() )
 				{
-					nCurVolume += 0.025;
+					nCurVolume += 0.005;
 					Verlocity.sound.SetVolumeGroup( "verSoundscape", nCurVolume );
 				}
 				else
 				{
 					bFadeIn = false;
 				}
+				return;
+			}
+			
+			if ( nCurVolume != Verlocity.sound.GetVolume() )
+			{
+				nCurVolume = Verlocity.sound.GetVolume();
+				Verlocity.sound.SetVolumeGroup( "verSoundscape", Verlocity.sound.GetVolume() );
 			}
 		}
 
@@ -128,6 +144,7 @@ package VerlocityEngine.components
 	
 			bFadeIn = true;
 			scCurrent = scSoundscape;
+			Verlocity.sound.StopGroup( "verSoundscape" );
 
 			var curSoundGroup:verBSoundGroup;
 			var sIndex:String;
@@ -163,6 +180,7 @@ package VerlocityEngine.components
 		public function Set( scNew:verBSoundscape ):void
 		{
 			scNext = scNew;
+			nCurVolume = Verlocity.sound.GetVolume();
 
 			if ( scCurrent )
 			{
