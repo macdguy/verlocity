@@ -111,11 +111,9 @@ package VerlocityEngine.components
 				{
 					pGoto = null;
 				}
-
-				return;
 			}
 			
-			if ( entFollow )
+			if ( entFollow && !pGoto )
 			{
 				if ( bEasing )
 				{
@@ -126,8 +124,6 @@ package VerlocityEngine.components
 				{
 					SetPos( entFollow.absX, entFollow.absY );
 				}
-
-				return;
 			}
 
 			if ( pBeforeShake )
