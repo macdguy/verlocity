@@ -23,7 +23,9 @@ package VerlocityEngine.components
 	import flash.geom.Point;
 	
 	import fl.motion.Color;
-	import flash.geom.ColorTransform;	
+	import fl.motion.AdjustColor;
+	import flash.geom.ColorTransform;
+	import flash.filters.ColorMatrixFilter;
 
 	import VerlocityEngine.Verlocity;
 	import VerlocityEngine.VerlocityLanguage;
@@ -55,7 +57,9 @@ package VerlocityEngine.components
 		
 		private var ctColor:ColorTransform = new ColorTransform( 1, 1, 1, 1 );
 		private var cTint:Color = new Color();
-		
+		private var aColor:AdjustColor = new AdjustColor();
+		private var cmFilter:ColorMatrixFilter = new ColorMatrixFilter();
+
 		private var pGoto:Point;
 		private var entFollow:verBEnt;
 		private var bEasing:Boolean;
@@ -261,6 +265,23 @@ package VerlocityEngine.components
 			
 			nShakeForce = nForce;
 			iShakeDuration = Verlocity.engine.CurTime() + iDuration;
+		}
+		
+		public function AdjustColors( nBrightness:Number, nContrast:Number, nHue:Number, nSaturation:Number ):void
+		{
+			aColor.brightness = nBrightness;
+			aColor.contrast = nContrast;
+			aColor.hue = nHue;
+			aColor.saturation = nSaturation;
+			
+			cmFilter.matrix = aColor.CalculateFinalFlatArray();
+
+			sprCamera.filters = [ cmFilter ];
+		}
+		
+		public function RemoveFilters():void
+		{
+			sprCamera.filters = null;
 		}
 
 		public function SetColor( r:int, g:int, b:int, alpha:Number = 1 ):void
