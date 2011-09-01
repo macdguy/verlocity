@@ -98,7 +98,17 @@ package VerlocityEngine
 		public static var RIGHTCLICK_PROMOTE:Boolean = true;
 		public static var RIGHTCLICK_PROMOTETEXT:String = "Powered by VerlocityEngine.com";
 		public static var RIGHTCLICK_PROMOTEURL:String = "http://www.verlocityengine.com";
+
 		
+		/*
+		 * DISABLE_TAB will turn off the focus rectangle that occurs
+		 * when you press tab. 
+		 * By default it is recommended you turn this off to prevent 
+		 * users from bypassing different input behaviors such as
+		 * locating hidden mouse input related buttons.
+		*/
+		public static var DISABLE_TAB:Boolean = true;
+
 		
 		/*
 		 * FLASH SETTINGS
