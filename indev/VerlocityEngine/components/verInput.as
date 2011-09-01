@@ -2,6 +2,7 @@
 {
 	import flash.display.DisplayObject;
 	import flash.display.Sprite;
+	import flash.ui.Keyboard;
 	import flash.events.KeyboardEvent;
 	import flash.events.MouseEvent;
 	import flash.ui.Mouse;
@@ -9,6 +10,7 @@
 	import VerlocityEngine.Verlocity;
 	import VerlocityEngine.VerlocityLanguage;
 	import VerlocityEngine.VerlocityHotkeys;
+	import VerlocityEngine.VerlocitySettings;
 	
 	import VerlocityEngine.util.mathHelper;
 
@@ -78,6 +80,15 @@
 		/*------------------ PRIVATE ------------------*/
 		private function KeyPressed( ke:KeyboardEvent ):void
 		{
+			if ( VerlocitySettings.DISABLE_TAB )
+			{			
+				if ( ke.keyCode == Keyboard.TAB )
+				{
+					ke.currentTarget.tabChildren = false;
+				}
+			}
+
+
 			if ( !HasKeyControl ) { return; }
 
 			if ( objKeysDown )

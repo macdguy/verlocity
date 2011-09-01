@@ -101,11 +101,11 @@ package VerlocityEngine
 
 		
 		/*
-		 * DISABLE_TAB will turn off the focus rectangle that occurs
+		 * DISABLE_TAB turns off the focus rectangle that occurs
 		 * when you press tab. 
-		 * By default it is recommended you turn this off to prevent 
-		 * users from bypassing different input behaviors such as
-		 * locating hidden mouse input related buttons.
+		 * It is recommended you keep this setting enabled to 
+		 * prevent users from bypassing different input behaviors
+		 * (such as locating hidden buttons).
 		*/
 		public static var DISABLE_TAB:Boolean = true;
 

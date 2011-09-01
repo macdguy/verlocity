@@ -62,15 +62,6 @@ package VerlocityEngine
 		/*------------------ PRIVATE -------------------*/
 		private static function HandleKeys( ke:KeyboardEvent ):void
 		{
-			if ( VerlocitySettings.DISABLE_TAB )
-			{			
-				if ( ke.keyCode == Keyboard.TAB )
-				{
-					ke.currentTarget.tabChildren = false;
-				}
-			}			
-
-
 			if ( Verlocity.console && Verlocity.console.IsEnabled ) { return; }
 
 			if ( Get( "VerlocityFullscreen" ) == ke.keyCode )
