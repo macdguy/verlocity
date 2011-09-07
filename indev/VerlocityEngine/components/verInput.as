@@ -88,7 +88,6 @@
 				}
 			}
 
-
 			if ( !HasKeyControl ) { return; }
 
 			if ( objKeysDown )
@@ -146,16 +145,6 @@
 			if ( !HasMouseControl ) { return; }
 
 			bMouseDown = false;
-		}
-		
-		private function MouseHide():void
-		{
-			Mouse.hide();
-		}
-		
-		private function MouseShow():void
-		{
-			Mouse.show();
 		}
 
 
@@ -243,6 +232,16 @@
 			if ( !bHasMouseControls ) { return; }
 			
 			bHasMouseControls = false;
+		}
+		
+		public function MouseHide():void
+		{
+			Mouse.hide();
+		}
+		
+		public function MouseShow():void
+		{
+			Mouse.show();
 		}
 		
 		
