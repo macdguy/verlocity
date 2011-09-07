@@ -40,7 +40,7 @@ package VerlocityEngine
 		*/
 		private static var vMessages:Vector.<Array>;
 
-		private static const messageFormat = new TextFormat( "_sans", 24, 0xFFFFFF );
+		private static const messageFormat:TextFormat = new TextFormat( "_sans", 24, 0xFFFFFF );
 		
 
 		/*

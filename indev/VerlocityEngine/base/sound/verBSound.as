@@ -37,7 +37,7 @@
 		private var iPausePos:int;
 		private var bIsPaused:Boolean;
 
-		public function verBSound( sSound, nStartVolume:Number = 1, bLoops:Boolean = false, bLocationBased:Boolean = false, sGroup:String = "default" ):void
+		public function verBSound( sSound:*, nStartVolume:Number = 1, bLoops:Boolean = false, bLocationBased:Boolean = false, sGroup:String = "default" ):void
 		{
 			sndObj = new Sound();
 			sndChan = new SoundChannel();
@@ -59,7 +59,7 @@
 
 			// Make sure sound is valid.
 			sndObj.addEventListener( IOErrorEvent.IO_ERROR, catchRequestError );
-			function catchRequestError( e:IOErrorEvent )
+			function catchRequestError( e:IOErrorEvent ):void
 			{
 				Verlocity.Trace( "Sound", "ERROR: UNABLE TO PLAY SOUND, CHECK IF CLASS/URL IS VALID!" );
 				sndObj.removeEventListener( IOErrorEvent.IO_ERROR, catchRequestError );

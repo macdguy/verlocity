@@ -38,7 +38,7 @@
 		protected function OnRespawn():void {}
 		protected function OnTakeDamage():void {}
 		protected function OnKill():void {}
-		protected function OnCollide( entCollided ):void {}
+		protected function OnCollide( ent:* ):void {}
 
 		public override function Dispose():void
 		{

@@ -69,7 +69,7 @@ package VerlocityEngine.components
 		{
 			if ( !Verlocity.console ) { return; }
 
-			Verlocity.console.Register( "ui_remove_all", function()
+			Verlocity.console.Register( "ui_remove_all", function():void
 			{
 				RemoveAll();
 			}, "Removes all UI elements." );

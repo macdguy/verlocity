@@ -20,7 +20,7 @@
 			classFlag = classSetFlag;
 		}
 		
-		protected override function OnCollide( ent ):void
+		protected override function OnCollide( ent:* ):void
 		{
 			if ( classFlag )
 			{

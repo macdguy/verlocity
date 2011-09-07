@@ -58,7 +58,7 @@ package VerlocityEngine.components
 		{
 			if ( !Verlocity.console ) { return; }
 
-			Verlocity.console.Register( "achi_set", function( achievement:String )
+			Verlocity.console.Register( "achi_set", function( achievement:String ):void
 			{
 				if ( !Get( achievement ) ) { Verlocity.console.Output( "Achievement not valid.  Use achi_list to list all." ); return; }
 				if ( IsUnlocked( achievement ) ) { Verlocity.console.Output( "Achievement already unlocked!" ); return; }
@@ -66,7 +66,7 @@ package VerlocityEngine.components
 				Set( achievement );
 			}, "Unlock an achievement." );
 
-			Verlocity.console.Register( "achi_info", function( achievement:String )
+			Verlocity.console.Register( "achi_info", function( achievement:String ):void
 			{
 				if ( !Get( achievement ) ) { Verlocity.console.Output( "Achievement not valid.  Use achi_list to list all." ); return; }
 
@@ -76,7 +76,7 @@ package VerlocityEngine.components
 				
 			}, "Gets information about an achievement." );
 
-			Verlocity.console.Register( "achi_list", function()
+			Verlocity.console.Register( "achi_list", function():void
 			{
 				var aList:Array = new Array();
 

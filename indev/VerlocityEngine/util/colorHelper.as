@@ -3,7 +3,7 @@ package VerlocityEngine.util
 	public final class colorHelper 
 	{
 
-		public static function RGBtoHEX( r:int, g:int, b:int )
+		public static function RGBtoHEX( r:int, g:int, b:int ):uint
 		{
 			return r << 16 | g << 8 | b;
 		}
@@ -12,7 +12,7 @@ package VerlocityEngine.util
 			Based on: http://www.cs.rit.edu/~ncs/color/t_convert.html
 			AS3 from: https://gist.github.com/638271
 		*/
-		public static function HSVtoHex( h:Number, s:Number, v:Number )
+		public static function HSVtoHex( h:Number, s:Number, v:Number ):uint
 		{
 			var r: Number = 0, g: Number = 0, b: Number = 0;
 			var i: Number, x: Number, y: Number, z: Number;
@@ -38,7 +38,7 @@ package VerlocityEngine.util
 		/*
 			Idea from: http://codecanyon.net/forums/thread/as3-help-needed-calculate-complementary-opposite-hex-color-value/31176?page=2#292970
 		*/
-		public static function FindComplimentaryHue( hue:Number )
+		public static function FindComplimentaryHue( hue:Number ):Number
 		{
 			var compHue:Number = hue + 180;
 			if ( compHue > 360 ) { compHue - 360; }

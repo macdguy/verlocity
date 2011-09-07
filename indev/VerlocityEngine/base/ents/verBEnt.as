@@ -42,7 +42,7 @@
 		protected var spawnY:int;
 		protected var bIsSpawned:Boolean;
 
-		public function Spawn( layer ):void
+		public function Spawn( layer:* ):void
 		{
 			play();
 			
@@ -189,7 +189,7 @@
 		 * Returns if the entity matches a type or class.
 		 * @usage	Example usage: ent.Is( "bullet" );  or  ent.Is( PlayerBullet );
 		*/
-		public function Is( sCheck ):Boolean
+		public function Is( sCheck:* ):Boolean
 		{
 			if ( sCheck is String )
 			{
@@ -269,7 +269,7 @@
 		 * @param	bParent Set this to true if you want the sound to follow the entity's position.
 		 * @usage	Example usage: ent.EmitSound( "hurt.mp3" );
 		 */
-		public function EmitSound( sSound, nStartVolume:Number = 1, bLoops:Boolean = false, bParent:Boolean = false ):void
+		public function EmitSound( sSound:*, nStartVolume:Number = 1, bLoops:Boolean = false, bParent:Boolean = false ):void
 		{
 			var newSound:verBSound = Verlocity.sound.Create( sSound, nStartVolume, bLoops, true );
 			newSound.SetPos( x );

@@ -73,12 +73,12 @@ package VerlocityEngine.components
 		{
 			if ( !Verlocity.console ) { return; }
 
-			Verlocity.console.Register( "endstate", function()
+			Verlocity.console.Register( "endstate", function():void
 			{
 				End();
 			}, "Ends the current state.  If NextState is available, it will go to that state." );
 
-			Verlocity.console.Register( "restart", function()
+			Verlocity.console.Register( "restart", function():void
 			{
 				Restart();
 			}, "Restarts the current state." );

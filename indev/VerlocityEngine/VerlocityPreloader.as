@@ -38,9 +38,9 @@ package VerlocityEngine
 
 		private var iProgress:int;
 
-		private const loadFormat = new TextFormat( "_sans", 24, 0xFFFFFF, true );
-		private const loadFormatLoad = new TextFormat( "_sans", 18, 0xFFFFFF, true );
-		private const loadFormatBytes = new TextFormat( "_sans", 10, 0xFFFFFF );
+		private const loadFormat:TextFormat = new TextFormat( "_sans", 24, 0xFFFFFF, true );
+		private const loadFormatLoad:TextFormat = new TextFormat( "_sans", 18, 0xFFFFFF, true );
+		private const loadFormatBytes:TextFormat = new TextFormat( "_sans", 10, 0xFFFFFF );
 
 		private var tfLoadPercent:TextField;
 		private var tfLoadText:TextField;

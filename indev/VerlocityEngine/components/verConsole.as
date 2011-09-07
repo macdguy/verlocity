@@ -318,13 +318,13 @@ package VerlocityEngine.components
 		//====================
 		private function RegisterCommands():void
 		{
-			Register( "clear", function()
+			Register( "clear", function():void
 			{
 				SetInput(); taOutput.text = "";
 				Output( "Cleared console." );
 			}, "Clears the console output." );
 		
-			Register( "help", function()
+			Register( "help", function():void
 			{
 				Output( "\n--Available Commands--" );
 
@@ -337,7 +337,7 @@ package VerlocityEngine.components
 
 			}, "Displays a list of all the available console commands." );
 
-			Register( "garbage", function()
+			Register( "garbage", function():void
 			{
 				var nOldMem:Number = Verlocity.stats.Memory;
 				VerlocityUtil.GC();
@@ -394,10 +394,10 @@ internal class verGUIRealTimeStats extends Sprite
 {
 	private var iDelay:int;;
 
-	private const fpsFormat = new TextFormat( "_sans", 24, 0xFFFFFF );
+	private const fpsFormat:TextFormat = new TextFormat( "_sans", 24, 0xFFFFFF );
 	private var fpsText:TextField;
 
-	private const statFormat = new TextFormat( "_sans", 10, 0xFFFFFF );
+	private const statFormat:TextFormat = new TextFormat( "_sans", 10, 0xFFFFFF );
 	private var statText:TextField;
 	
 	private var sprAnalyzer:Sprite;

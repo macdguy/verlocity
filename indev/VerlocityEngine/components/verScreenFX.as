@@ -56,7 +56,7 @@ package VerlocityEngine.components
 		{
 			if ( !Verlocity.console ) { return; }
 
-			Verlocity.console.Register( "sfx_remove_all", function()
+			Verlocity.console.Register( "sfx_remove_all", function():void
 			{
 				RemoveAll( false );
 			}, "Removes all screen FX (non-protected)." );

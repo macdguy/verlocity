@@ -75,12 +75,12 @@ package VerlocityEngine.components
 		{
 			if ( !Verlocity.console ) { return; }
 
-			Verlocity.console.Register( "sound_stopall", function()
+			Verlocity.console.Register( "sound_stopall", function():void
 			{
 				StopAll();
 			}, "Stops all sounds being played." );
 
-			Verlocity.console.Register( "sound_playurl", function( url:String )
+			Verlocity.console.Register( "sound_playurl", function( url:String ):void
 			{
 				Create( url );
 			}, "Plays a sound from a URL." );
@@ -132,7 +132,7 @@ package VerlocityEngine.components
 			return vSounds.length;
 		}
 		
-		public function Create( sSound, nStartVolume:Number = 1, bLoops:Boolean = false, bLocationBased:Boolean = false, sGroup:String = "default" ):verBSound
+		public function Create( sSound:*, nStartVolume:Number = 1, bLoops:Boolean = false, bLocationBased:Boolean = false, sGroup:String = "default" ):verBSound
 		{
 			var newSound:verBSound = new verBSound( sSound, nStartVolume, bLoops, bLocationBased, sGroup );
 

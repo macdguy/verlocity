@@ -12,6 +12,7 @@
 */
 package VerlocityEngine 
 {
+	import VerlocityEngine.base.ui.verBUI;
 	import VerlocityEngine.components.*;
 	import VerlocityEngine.VerlocityLanguage;
 
@@ -46,7 +47,7 @@ package VerlocityEngine
 		}
 		
 		/*------------------ PUBLIC -------------------*/
-		public static function Get( sName:String )
+		public static function Get( sName:String ):*
 		{
 			return objComponents[sName];
 		}

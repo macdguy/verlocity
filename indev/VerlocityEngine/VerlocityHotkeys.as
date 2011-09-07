@@ -29,9 +29,9 @@ package VerlocityEngine
 		*/
 		objKeys["VerlocityVolumeDown"] = 189; // _-
 		objKeys["VerlocityVolumeUp"] = 187; // =+
-		objKeys["VerlocityVolumeMute"] = Keyboard.M;
-		objKeys["VerlocityPause"] = Keyboard.P;
-		objKeys["VerlocityFullscreen"] = Keyboard.F;
+		objKeys["VerlocityVolumeMute"] = 77; //Keyboard.M
+		objKeys["VerlocityPause"] = 80; //Keyboard.P
+		objKeys["VerlocityFullscreen"] = 70; //Keyboard.F
 
 		objKeys["VerlocityNextUI"] = Keyboard.UP;
 		objKeys["VerlocityPreviousUI"] = Keyboard.DOWN;
@@ -115,7 +115,7 @@ package VerlocityEngine
 		
 		
 		/*------------------ PUBLIC -------------------*/
-		public static function Get( sName:String )
+		public static function Get( sName:String ):uint
 		{
 			return objKeys[sName];
 		}

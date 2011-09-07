@@ -121,7 +121,7 @@ package VerlocityEngine.components
 		
 		/*------------------ PRIVATE ------------------*/
 		/*------------------ PUBLIC -------------------*/
-		public function Create( sName:String, layer:verBLayer = null, bAddToCamera:Boolean = true, iPosX:int = 0, iPosY:int = 0 )
+		public function Create( sName:String, layer:verBLayer = null, bAddToCamera:Boolean = true, iPosX:int = 0, iPosY:int = 0 ):verBLayer
 		{
 			if ( objLayers[sName] != null )
 			{
@@ -166,7 +166,13 @@ package VerlocityEngine.components
 		
 		public function Insert( obj:DisplayObject, sName:String ):void
 		{
-			Get( sName ).addChild( obj );
+			if ( objLayers[sName] == null )
+			{
+				Verlocity.Trace( "Layers", sName + VerlocityLanguage.T( "GenericMissing" ) );
+				return;
+			}
+
+			objLayers[sName].addChild( obj );
 		}
 		
 		public function Remove( sName:String ):void

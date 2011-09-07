@@ -149,7 +149,7 @@
 
 
 		/*------------------ PUBLIC -------------------*/
-		public function KeyIsDown( key ):Boolean
+		public function KeyIsDown( key:* ):Boolean
 		{
 			if ( !objKeysDown ) { return false; }
 

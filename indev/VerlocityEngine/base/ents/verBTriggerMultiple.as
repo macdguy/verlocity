@@ -14,7 +14,7 @@
 			iDelayNext = iDelayNextTrigger;
 		}
 		
-		protected override function OnCollide( ent ):void
+		protected override function OnCollide( ent:* ):void
 		{
 			if ( iDelay < Verlocity.engine.CurTime() )
 			{

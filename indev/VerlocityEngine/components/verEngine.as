@@ -92,12 +92,12 @@ package VerlocityEngine.components
 		{
 			if ( !Verlocity.console ) { return; }
 
-			Verlocity.console.Register( "timescale", function( scale:String )
+			Verlocity.console.Register( "timescale", function( scale:String ):void
 			{
 				TimeScale( Number( scale ) );
 			}, "Alters the timescale.  Less than 1 to make it run slower, more than 1 to make it run faster." );
 
-			Verlocity.console.Register( "curtime", function()
+			Verlocity.console.Register( "curtime", function():void
 			{
 				Verlocity.console.Output( "CurTime: " + CurTime() );
 			}, "Outputs the current time." );

@@ -63,7 +63,7 @@ package VerlocityEngine.components
 		{
 			if ( !Verlocity.console ) { return; }
 
-			Verlocity.console.Register( "ent_set", function( obj:String, property:String, value:String )
+			Verlocity.console.Register( "ent_set", function( obj:String, property:String, value:String ):void
 			{
 				//if ( "hasOwnProperty" in obj ) { Output( "Set command failed: Object not valid." ); return; }
 				//if ( !obj.hasOwnProperty( property ) ) { Output( "Set command failed: Property not found in object." ); return; }
@@ -71,7 +71,7 @@ package VerlocityEngine.components
 				//obj[property] = value;
 			}, "Sets a propterty (ex. height) to any entity." );
 
-			Verlocity.console.Register( "ent_remove_all", function()
+			Verlocity.console.Register( "ent_remove_all", function():void
 			{
 				RemoveAll( false );
 			}, "Removes all entities (non-protected)." );
@@ -179,7 +179,7 @@ package VerlocityEngine.components
 
 					disp.removeChild( original );
 
-					var bc = RecreateEnt( originalClass, original.x, original.y, original.rotation );
+					var bc:* = RecreateEnt( originalClass, original.x, original.y, original.rotation );
 					if ( bc )
 					{
 						disp.addChild( bc );

@@ -75,12 +75,12 @@ package VerlocityEngine.components
 		{
 			if ( !Verlocity.console ) { return; }
 
-			Verlocity.console.Register( "pause", function()
+			Verlocity.console.Register( "pause", function():void
 			{
 				Pause();
 			}, "Pauses the engine." );
 
-			Verlocity.console.Register( "resume", function()
+			Verlocity.console.Register( "resume", function():void
 			{
 				Resume();
 			}, "Resumes the engine." );
@@ -104,7 +104,7 @@ package VerlocityEngine.components
 			}
 		}
 		
-		private function PauseLostFocusHandle( e:Event )
+		private function PauseLostFocusHandle( e:Event ):void
 		{
 			if ( !bPauseEnabled || ( Verlocity.console && Verlocity.console.IsEnabled ) ) { return; }
 
@@ -291,10 +291,10 @@ internal class verGUIPauseMenu extends Sprite
 	private var menuWidth:int = 200;
 	private var menuHeight:int = 200;
 
-	private const pauseFormat = new TextFormat( "_sans", 30, 0xFFFFFF );
-	private const pauseMenuFormat = new TextFormat( "_sans", 16, 0xFFFFFF, true );
-	private const pauseResumeFormat = new TextFormat( "_sans", 20, 0xFFFFFF, true );
-	private const pauseTagFormat = new TextFormat( "_sans", 12, 0xFFFFFF, true );
+	private const pauseFormat:TextFormat = new TextFormat( "_sans", 30, 0xFFFFFF );
+	private const pauseMenuFormat:TextFormat = new TextFormat( "_sans", 16, 0xFFFFFF, true );
+	private const pauseResumeFormat:TextFormat = new TextFormat( "_sans", 20, 0xFFFFFF, true );
+	private const pauseTagFormat:TextFormat = new TextFormat( "_sans", 12, 0xFFFFFF, true );
 
 	public function verGUIPauseMenu( iPosX:int, iPosY:int ):void
 	{
@@ -307,7 +307,7 @@ internal class verGUIPauseMenu extends Sprite
 		// Pause Menu
 		//======================
 		var puiResume:verGUIPauseMenuButton = new verGUIPauseMenuButton( "RESUME", pauseResumeFormat, 5, 40,
-			function() {
+			function():void {
 				Verlocity.pause.Resume();
 			} );
 		addChild( puiResume );
@@ -361,19 +361,19 @@ internal class verGUIPauseMenu extends Sprite
 		addChild( qualityText );
 
 		var puiLowQ:verGUIPauseButton = new verGUIPauseButton( "L", pauseMenuFormat, 15, iSettingsY,
-			function() {
+			function():void {
 				Verlocity.SetQuality( 1 );
 			} );
 		addChild( puiLowQ );
 
 		var puiMedQ:verGUIPauseButton = new verGUIPauseButton( "M", pauseMenuFormat, 40, iSettingsY,
-			function() {
+			function():void {
 				Verlocity.SetQuality( 2 );
 			} );
 		addChild( puiMedQ );
 
 		var puiHighQ:verGUIPauseButton = new verGUIPauseButton( "H", pauseMenuFormat, 65, iSettingsY,
-			function() {
+			function():void {
 				Verlocity.SetQuality( 3 );
 			} );
 		addChild( puiHighQ );
@@ -387,19 +387,19 @@ internal class verGUIPauseMenu extends Sprite
 		addChild( soundText );
 
 		var puiSndDown:verGUIPauseButton = new verGUIPauseButton( "-", pauseMenuFormat, 115, iSettingsY,
-			function() {
+			function():void {
 				Verlocity.sound.VolumeDown();
 			} );
 		addChild( puiSndDown );
 
 		var puiSndMute:verGUIPauseButton = new verGUIPauseButton( "M", pauseMenuFormat, 140, iSettingsY,
-			function() {
+			function():void {
 				if ( Verlocity.sound.IsMuted ) { Verlocity.sound.UnMute(); } else { Verlocity.sound.Mute(); }
 			} );
 		addChild( puiSndMute );
 
 		var puiSndUp:verGUIPauseButton = new verGUIPauseButton( "+", pauseMenuFormat, 165, iSettingsY,
-			function() {
+			function():void {
 				Verlocity.sound.VolumeUp();
 			} );
 		addChild( puiSndUp );
@@ -407,13 +407,13 @@ internal class verGUIPauseMenu extends Sprite
 
 		// MISC
 		var puiAchievements:verGUIPauseButton = new verGUIPauseButton( "ACHIEVEMENTS", pauseMenuFormat, 15, iSettingsY + 30,
-			function() {
+			function():void {
 				trace( "omg achievements" );
 			}, 170 );
 		addChild( puiAchievements );
 
 		var puiFullscreen:verGUIPauseButton = new verGUIPauseButton( "FULLSCREEN", pauseMenuFormat, 15, iSettingsY + 55,
-			function() {
+			function():void {
 				Verlocity.SetFullscreen( !Verlocity.IsFullscreen );
 			}, 170 );
 		addChild( puiFullscreen );
