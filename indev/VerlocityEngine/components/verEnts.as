@@ -106,11 +106,8 @@ package VerlocityEngine.components
 				}
 				else
 				{
-					if ( refCurrent.stage )
-					{
-						refCurrent.InternalThink();
-						refCurrent.Think();
-					}
+					refCurrent.InternalThink();
+					refCurrent.Think();
 				}
 
 				refCurrent = null;
@@ -165,10 +162,10 @@ package VerlocityEngine.components
 
 			var original:DisplayObject;
 
-			var i:int = disp.numChildren - 1;
+			var iNum:int = disp.numChildren - 1;
 
 			// TODO: Solve sorting issue
-			while( i >= 0 )
+			for ( var i:int = 0; i <= iNum; i++ )
 			{
 				original = disp.getChildAt( i );
 
@@ -177,7 +174,7 @@ package VerlocityEngine.components
 					var originalName:String = getQualifiedClassName( original );
 					var originalClass:Class = getDefinitionByName( originalName ) as Class;
 
-					disp.removeChild( original );
+					original.visible = false; // TODO: Fix removing child issue.
 
 					var bc:* = RecreateEnt( originalClass, original.x, original.y, original.rotation );
 					if ( bc )
@@ -192,7 +189,6 @@ package VerlocityEngine.components
 				}
 
 				original = null;
-				i--;
 			}
 		}
 		

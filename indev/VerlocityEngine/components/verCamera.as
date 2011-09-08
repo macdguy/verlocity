@@ -121,12 +121,12 @@ package VerlocityEngine.components
 			{
 				if ( bEasing )
 				{
-					sprCamera.x -= mathHelper.Ease( sprCamera.x, pCenter.x - entFollow.absX, iEasingSpeed );
-					sprCamera.y -= mathHelper.Ease( sprCamera.y, pCenter.y - entFollow.absY, iEasingSpeed );
+					sprCamera.x -= mathHelper.Ease( sprCamera.x, pCenter.x - entFollow.x, iEasingSpeed );
+					sprCamera.y -= mathHelper.Ease( sprCamera.y, pCenter.y - entFollow.y, iEasingSpeed );
 				}
 				else
 				{
-					SetPos( entFollow.absX, entFollow.absY );
+					SetPos( entFollow.x, entFollow.y );
 				}
 			}
 
@@ -324,7 +324,7 @@ package VerlocityEngine.components
 		public function ResetColor():void
 		{
 			ctColor = null;
-			sprCamera.transform.colorTransform = null;
+			sprCamera.transform.colorTransform = new ColorTransform();
 		}
 		
 		public function SetTint( amount:Number, r:int = 255, g:int = 255, b:int = 255 ):void
@@ -339,9 +339,12 @@ package VerlocityEngine.components
 
 		public function RemoveTint():void
 		{
-			cTint.alphaMultiplier = 0;
-			cTint = null;
-			sprCamera.transform.colorTransform = null;
+			if ( cTint )
+			{
+				cTint.alphaMultiplier = 0;
+				cTint = null;
+				sprCamera.transform.colorTransform = new ColorTransform();
+			}
 		}
 		
 		public function SetMask( mask:DisplayObject ):void
