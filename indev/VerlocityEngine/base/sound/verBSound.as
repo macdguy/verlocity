@@ -28,6 +28,10 @@
 		private var bIsStopped:Boolean;
 		private var bDoesLoop:Boolean;
 		private var bIsLocationBased:Boolean;
+		
+		private var bFadingOut:Boolean;
+		private var bFadingIn:Boolean;
+		private var nFadeSpeed:Number;
 
 		private var nVolume:Number;
 		private var nSetVolume:Number;
@@ -121,6 +125,7 @@
 			if ( !sndObj || sndObj.length <= 0 ) { return; }
 
 			LoopCalc();
+			FadeCalc();
 
 			if ( bIsLocationBased )
 			{
@@ -169,6 +174,38 @@
 			}
 		}
 		
+		private function FadeCalc():void
+		{
+			if ( bFadingOut )
+			{
+				if ( nVolume > 0 )
+				{	
+					nVolume = mathHelper.ClampNum( nVolume - nFadeSpeed );
+					sndTran.volume = nVolume;
+					sndChan.soundTransform = sndTran;
+				}
+				else
+				{
+					bFadingOut = false;
+					Stop();
+				}
+			}
+			
+			if ( bFadingIn )
+			{
+				if ( nVolume < nSetVolume )
+				{
+					nVolume = mathHelper.Clamp( nVolume + nFadeSpeed, nVolume, nSetVolume );
+					sndTran.volume = nVolume;
+					sndChan.soundTransform = sndTran;
+				}
+				else
+				{
+					bFadingIn = false;
+				}
+			}
+		}
+		
 		private function VolumeCalc():void
 		{
 			var newVolume:Number = nSetVolume;
@@ -201,8 +238,13 @@
 
 		public function SetVolume( nNewVolume:Number ):void
 		{
+			nNewVolume = mathHelper.ClampNum( nNewVolume );
+
 			nVolume = nNewVolume;
 			nSetVolume = nNewVolume;
+			
+			bFadingIn = false;
+			bFadingOut = false;
 
 			sndTran.volume = nVolume;
 			sndChan.soundTransform = sndTran;
@@ -225,6 +267,22 @@
 		{	
 			sndChan.stop();
 			bIsStopped = true;
+		}
+		
+		public function FadeOut( nSetFadeSpeed:Number = 0.025 ):void
+		{
+			bFadingOut = true;
+			nFadeSpeed = nSetFadeSpeed;
+		}
+		
+		public function FadeIn( nSetFadeSpeed:Number = 0.025 ):void
+		{
+			bFadingIn = true;
+			nFadeSpeed = nSetFadeSpeed;
+
+			nVolume = 0;
+			sndTran.volume = nVolume;
+			sndChan.soundTransform = sndTran;
 		}
 
 		public function IsStopped():Boolean
@@ -255,6 +313,10 @@
 
 			bIsStopped = false;
 			bDoesLoop = false;
+
+			bFadingOut = false;
+			bFadingIn = false;
+			nFadeSpeed = NaN;
 		}
 
 	}

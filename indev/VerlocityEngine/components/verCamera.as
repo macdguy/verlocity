@@ -200,6 +200,12 @@ package VerlocityEngine.components
 			}
 		}
 		
+		public function SetLayer( sLayer:String ):void
+		{
+			Verlocity.layers.Insert( sprCamera, sLayer );
+			Verlocity.layers.Insert( sCameraViewArea, sLayer );
+		}
+		
 		public function RemoveAll():void
 		{
 			for ( var i:int = 0; i < sprCamera.numChildren; i++ )

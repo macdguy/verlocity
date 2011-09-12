@@ -41,5 +41,10 @@
 			iMinX = iSetMinX; iMaxX = iSetMaxX;
 			iMinY = iSetMinY; iMaxY = iSetMaxY;
 		}
+		
+		public override function DeInit():void
+		{
+			etTrigger = null;
+		}
 	}
 }

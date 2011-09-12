@@ -97,7 +97,7 @@ package VerlocityEngine.components
 			// Output text
 			taOutput = new TextField();
 				taOutput.x = 5; taOutput.y = 5;
-				taOutput.width = Verlocity.ScrW - 10; taOutput.height = 120;
+				taOutput.width = Verlocity.ScrW - 110; taOutput.height = 120;
 				taOutput.selectable = true;
 				//taOutput.background = true; taOutput.backgroundColor = 0x222222;
 				//taOutput.border = true; taOutput.borderColor = 0x333333;
@@ -416,7 +416,7 @@ internal class verGUIRealTimeStats extends Sprite
 
 		// Stats
 		statText = new TextField();
-			statText.width = 125; statText.height = 125;
+			statText.width = 100; statText.height = 125;
 			statText.x = Verlocity.ScrW - statText.width - 5; statText.y = 1;
 			statText.selectable = false; statText.defaultTextFormat = statFormat;
 			statText.background = true; statText.backgroundColor = 0x222222;
@@ -446,10 +446,10 @@ internal class verGUIRealTimeStats extends Sprite
 		statText.text = "FPS: " + Verlocity.stats.FPS + " / " + Verlocity.stage.frameRate +
 		"\nMEM: " + Verlocity.stats.Memory + 
 		"\nMS: " + Verlocity.stats.MS + 
+		"\nState: " + Verlocity.state.GetName() +
 		"\nEntities: " + Verlocity.ents.CountAll() + 
 		"\nSounds: " + Verlocity.sound.CountAll() +
-		"\nState: " + Verlocity.state.GetName() +
-		"\nSoundscape: " + Verlocity.soundscape.GetName() +
+		"\nSScape: " + Verlocity.soundscape.GetName() +
 		"\nBeat: ";
 		
 		// Analyzer	

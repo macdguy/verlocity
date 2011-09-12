@@ -78,13 +78,14 @@ package VerlocityEngine
 			VerlocityComponents.Register( "verStates", verStates ); // requires verEngine, verLayers
 			VerlocityComponents.Register( "verInput", verInput );
 			VerlocityComponents.Register( "verSound", verSound ); // requires verEngine
+			if ( VerlocitySettings.PAUSEABLE ) { VerlocityComponents.Register( "verPause", verPause ); }
 
 			// Additional components
 			VerlocityComponents.Register( "verSave", verSave );
 			VerlocityComponents.Register( "verVariables", verVariables ); // requires verSave
 			VerlocityComponents.Register( "verStats", verStats );
 			VerlocityComponents.Register( "verUI", verUI );
-			VerlocityComponents.Register( "verPause", verPause );
+			
 			VerlocityComponents.Register( "verSoundAnalyzer", verSoundAnalyzer ); // requires verEngine
 			VerlocityComponents.Register( "verAchievements", verAchievements ); // requires verEngine, verLayers
 			VerlocityComponents.Register( "verScrFX", verScreenFX ); // requires verEngine, verLayers
@@ -182,15 +183,23 @@ package VerlocityEngine
 		}
 		public static function get IsFullscreen():Boolean { return sStage.displayState == StageDisplayState.FULL_SCREEN; }
 		
-		public static function CleanSlate( bRemoveProtected:Boolean = false ):void
+		public static function CleanSlate( bRemoveProtected:Boolean = false, bFadeOutSound:Boolean = false ):void
 		{
-			sound.StopAll();
-			ents.RemoveAll( bRemoveProtected );
-			scrFX.RemoveAll( bRemoveProtected );
-			camera.Reset();
-			layers.RemoveAll();
-			ui.RemoveAll();
-			soundscape.Stop();
+			if ( a3D ) { a3D.Remove(); }
+			if ( ents ) { ents.RemoveAll( bRemoveProtected ); }
+			if ( layers ) { layers.RemoveAll(); }
+
+			if ( scrFX ) { scrFX.RemoveAll( bRemoveProtected ); }
+			if ( camera ) { camera.Reset(); }
+
+			if ( ui ) { ui.RemoveAll(); }
+
+			if ( soundscape ) { soundscape.Stop(); }
+
+			if ( sound )
+			{
+				if ( bFadeOutSound ) { sound.FadeOutAll(); } else { sound.StopAll( bRemoveProtected ); }
+			}
 		}
 
 	}

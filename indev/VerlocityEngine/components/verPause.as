@@ -94,7 +94,7 @@ package VerlocityEngine.components
 		/*------------------ PRIVATE ------------------*/
 		private function PauseKeyHandle( ke:KeyboardEvent ):void
 		{
-			if ( !bPauseEnabled || ( Verlocity.console && Verlocity.console.IsEnabled ) || iPauseDelay > getTimer() ) { return; }
+			if ( !bPauseEnabled || Verlocity.state.IsTransitioning || ( Verlocity.console && Verlocity.console.IsEnabled ) || iPauseDelay > getTimer() ) { return; }
 
 			iPauseDelay = getTimer() + 1000;
 
@@ -106,7 +106,7 @@ package VerlocityEngine.components
 		
 		private function PauseLostFocusHandle( e:Event ):void
 		{
-			if ( !bPauseEnabled || ( Verlocity.console && Verlocity.console.IsEnabled ) ) { return; }
+			if ( !VerlocitySettings.PAUSE_ONFOCUSLOST || Verlocity.state.IsTransitioning || !bPauseEnabled || ( Verlocity.console && Verlocity.console.IsEnabled ) ) { return; }
 
 			Pause();
 		}

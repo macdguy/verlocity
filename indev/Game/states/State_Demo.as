@@ -7,6 +7,7 @@
 
 	public class State_Demo extends verBState
 	{
+		// Called when the state is first created.
 		public override function SetupState():void
 		{
 			Verlocity.layers.Create( "Demo" );

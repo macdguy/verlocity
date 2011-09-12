@@ -239,6 +239,23 @@ package VerlocityEngine.components
 				i--;
 			}
 		}
+		
+		public function FadeOutAll():void
+		{
+			var iLength:int = CountAll();
+			if ( iLength <= 0 ) { return; } 
+
+			var i:int = iLength - 1;
+			var refCurrent:verBSound;
+
+			while( i >= 0 )
+			{
+				refCurrent = vSounds[i];
+				refCurrent.FadeOut();
+				refCurrent = null;
+				i--;
+			}
+		}
 
 		public function SetVolume( nSetVolume:Number ):void
 		{

@@ -74,8 +74,7 @@ package VerlocityEngine
 				RemoveLoadGUI();
 
                 nextFrame();
-
-				StartDocumentClass();
+				//StartDocumentClass(); // No longer required.
 				
 				return;
             }
@@ -83,7 +82,12 @@ package VerlocityEngine
 			UpdateLoadGUI();
 		}
 		
-		private function StartDocumentClass():void
+		/*
+		 * No longer required.
+		 * The document class just needs to be added to
+		 * frame 2 in the IDE.
+		*/
+		/*private function StartDocumentClass():void
 		{
 			var docClass:Class = getDefinitionByName( DocumentClass ) as Class;
 
@@ -91,7 +95,7 @@ package VerlocityEngine
 			{
 				var doc:Object = new docClass( stage );
 			}
-		}
+		}*/
 		
 		protected function CreateLoadGUI():void
 		{

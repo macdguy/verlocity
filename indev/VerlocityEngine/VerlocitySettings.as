@@ -62,6 +62,23 @@ package VerlocityEngine
 		*/
 		public static const CONTENT_FOLDER:String = "content/";
 		
+
+		/*
+		 * These are the MovieClip classes you want to use for your
+		 * state transitions.
+		 * Leave them blank if you do not want transitions between states.
+		 * You can set these during runtime!
+		 * 
+		 * STATE_TRANSITION_IN defines the transition effect that occurs
+		 * when a state is first appearing (fading in).
+		 *
+		 * STATE_TRANSITION_OUT defines the transition effect that occurs
+		 * when a state is being removed (fading out).
+		*/
+		public static var STATE_TRANSITION_IN:Class;
+		public static var STATE_TRANSITION_OUT:Class;
+
+		
 		/*
 		 * START_VOLUME is the starting volume of your project.
 		 * This is to prevent games from starting out 
@@ -77,6 +94,21 @@ package VerlocityEngine
 		 * They are displayed in the top right hand corner.
 		*/
 		public static const SHOW_MESSAGES:Boolean = true;
+		
+		/*
+		 * PAUSABLE is the overall setting that completely
+		 * disables pausing.  Disabling this will disable
+		 * pausing completely.
+		 * It is recommended to leave this enabled.
+		*/
+		public static const PAUSEABLE:Boolean = true;
+		
+		/*
+		 * PAUSE_ONFOCUSLOST defines wheater you verPause
+		 * should automatically pause the game when it looses
+		 * window focus.
+		*/
+		public static const PAUSE_ONFOCUSLOST:Boolean = true;
 		
 		/*
 		 * SHOW_PAUSEMENU enables/disables the built-in pause

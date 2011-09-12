@@ -59,11 +59,20 @@ package VerlocityEngine.components
 		 ****************COMPONENT VARS******************
 		*/
 		private var CurrentState:verBState;
+		private var NextState:Array;
 
 		// Splash
 		private var mcSplash:MovieClip;
 		private var bSplashed:Boolean;
-		private var FirstState:Array;
+		
+		// Transitions
+		private var bDisableTransitions:Boolean;
+		private var bTransIn:Boolean;
+		private var bTransOut:Boolean;
+		private var bMouseEnabled:Boolean;
+		private var bKeyEnabled:Boolean;
+
+		private var mcTrans:MovieClip;
 
 
 		/*
@@ -90,6 +99,7 @@ package VerlocityEngine.components
 		*/
 		public function Think():void
 		{
+			// Splash screen
 			if ( mcSplash )
 			{
 				if ( ( mcSplash.currentFrame + 1 ) >= mcSplash.totalFrames )
@@ -100,17 +110,40 @@ package VerlocityEngine.components
 				return;
 			}
 
-			if ( CurrentState )
+
+			// Transitions
+			if ( !bDisableTransitions )
+			{
+				if ( bTransIn )
+				{
+					if ( mcTrans && ( mcTrans.currentFrame + 1 ) >= mcTrans.totalFrames )
+					{
+						EndTransIn();
+					}
+				}
+
+				if ( bTransOut )
+				{
+					if ( mcTrans && ( mcTrans.currentFrame + 1 ) >= mcTrans.totalFrames )
+					{
+						EndTransOut();
+					}
+				}
+			}
+
+
+			// Current state think
+			if ( CurrentState && !IsTransitioning )
 			{
 				if ( CurrentState.bIsCutscene && ( CurrentState.currentFrame + 1 ) >= CurrentState.totalFrames )
 				{
-					RemoveCurrentState();
+					StartTransOut();
 					return;
 				}
 
 				if ( CurrentState.ShouldEnd() )
 				{
-					RemoveCurrentState();
+					StartTransOut();
 					return;
 				}
 
@@ -148,11 +181,13 @@ package VerlocityEngine.components
 				prevState.parent.removeChild( prevState );
 			}
 
-			Verlocity.Trace( "States", "====Ended current state, " + prevState + "=====" );
+			Verlocity.Trace( "States", "=====Ended current state, " + prevState + "=====" );
 
 			setTimeout( VerlocityUtil.GC, 50 ); // HACK: Force the garbage collection after.
 		}
 		
+
+		// ==== SPLASH ====
 		private function DoSplash( state:verBState, bAdd:Boolean, layer:verBLayer ):void
 		{
 			Verlocity.Trace( "States", "Playing Verlocity splash.  Thanks for your support!" );
@@ -169,12 +204,8 @@ package VerlocityEngine.components
 			Verlocity.layers.layerVerlocity.addChild( mcSplash );
 
 			// Hold the first state for a bit.
-			FirstState = new Array();
-			FirstState[0] = state; FirstState[1] = bAdd; FirstState[2] = layer;
+			NextState = new Array( state, bAdd, layer );
 			state = null;
-			
-			// Disable pausing
-			Verlocity.pause.Disable();
 		}
 		
 		internal function SkipSplash():void
@@ -198,12 +229,108 @@ package VerlocityEngine.components
 			VerlocityUtil.GC();
 
 			// Set the first state now.
-			Set( FirstState[0], FirstState[1], FirstState[2] );
-			FirstState[0].play(); FirstState.length = 0; FirstState = null;
-			
-			// Enable pausing.
-			Verlocity.pause.Enable();
+			if ( NextState )
+			{
+				Set( NextState[0], NextState[1], NextState[2] );
+				NextState = null;
+			}
 		}
+		// ==== END SPLASH ====
+		
+		
+
+		// ==== TRANSITIONS ====
+		private function AddTransEffect():void
+		{
+			mcTrans.x = 0; mcTrans.y = 0;
+
+			mcTrans.width = Verlocity.ScrW;
+			mcTrans.height = Verlocity.ScrH;
+			
+			mcTrans.gotoAndPlay( 1 );
+			Verlocity.layers.layerVerlocity.addChild( mcTrans );
+			
+			//Disable		
+			if ( Verlocity.input ) 
+			{	
+				bMouseEnabled = Verlocity.input.HasMouseControl;
+				bKeyEnabled = Verlocity.input.HasKeyControl;
+
+				Verlocity.input.KeyDisable();
+				Verlocity.input.MouseDisable();	
+			}			
+		}
+		
+		private function RemoveTransEffect():void
+		{
+			Verlocity.layers.layerVerlocity.removeChild( mcTrans );
+			mcTrans.stop();
+			mcTrans = null;
+			
+			//Re enable input when the state is finished transitioning.
+			if ( Verlocity.input ) 
+			{
+				if ( bMouseEnabled ) { Verlocity.input.MouseEnable(); }
+				if ( bKeyEnabled ) { Verlocity.input.KeyEnable(); }	
+			}
+		}
+		
+		private function StartTransIn():void
+		{
+			if ( !VerlocitySettings.STATE_TRANSITION_IN || bDisableTransitions ) { EndTransIn(); return; }
+
+			bTransIn = true;
+			
+			mcTrans = new VerlocitySettings.STATE_TRANSITION_IN();
+			AddTransEffect();
+		}
+		
+		private function EndTransIn():void
+		{
+			bTransIn = false;
+			
+			CurrentState.BeginState();
+			CurrentState.play();
+			
+			if ( mcTrans )
+			{
+				RemoveTransEffect();
+			}
+		}
+		
+		private function StartTransOut():void
+		{
+			if ( !VerlocitySettings.STATE_TRANSITION_OUT || bDisableTransitions ) { EndTransOut(); return; }
+
+			bTransOut = true;
+			
+			mcTrans = new VerlocitySettings.STATE_TRANSITION_OUT();
+			AddTransEffect();
+		}
+		
+		private function EndTransOut():void
+		{
+			bTransOut = false;
+
+			if ( mcTrans ) 
+			{
+				RemoveTransEffect();
+			}
+
+			if ( NextState )
+			{
+				RemoveCurrentState( false );
+
+				Set( NextState[0], NextState[1], NextState[2] );
+				NextState = null;
+			}
+			else
+			{
+				RemoveCurrentState();
+			}
+		}
+		// ==== END TRANSITIONS ====
+
 
 		/*------------------ PUBLIC -------------------*/
 		public function Set( newState:verBState, bAdd:Boolean = false, layer:verBLayer = null ):void
@@ -228,16 +355,18 @@ package VerlocityEngine.components
 			// Resume the engine if it was paused when we end the state.
 			// This solves a lot of issues and ultimately is required.
 			// You should not have an issue with this fix due to the fact that only the game can set states, not the user.
-			Verlocity.pause.Resume();
-
+			if ( Verlocity.pause ) { Verlocity.pause.Resume(); }
+			
 			if ( CurrentState )
 			{
-				RemoveCurrentState( false );
+				NextState = new Array( newState, bAdd, layer );
+				StartTransOut();
+
+				return;
 			}
-			
-			// TODO: Implement transition class.
 
 			newState.SetupState();
+			newState.stop();
 
 			if ( bAdd || newState.bAddToStage )
 			{
@@ -254,10 +383,9 @@ package VerlocityEngine.components
 					Verlocity.layers.layerState.addChildAt( newState, 0 );
 				}
 			}
-
-			newState.BeginState();
-
+			
 			CurrentState = newState;
+			StartTransIn();
 
 			Verlocity.Trace( "States", "====Set state to " + newState + "====" );
 		}
@@ -266,7 +394,7 @@ package VerlocityEngine.components
 		{
 			if ( !CurrentState ) { return; }
 			
-			Verlocity.pause.Resume();
+			if ( Verlocity.pause ) { Verlocity.pause.Resume(); }
 
 			CurrentState.EndState();
 
@@ -281,11 +409,11 @@ package VerlocityEngine.components
 			// Resume the engine if it was paused when we end the state.
 			// This solves a lot of issues and ultimately is required.
 			// You should not have an issue with this fix due to the fact that only the game can set states, not the user.
-			Verlocity.pause.Resume();
+			if ( Verlocity.pause ) { Verlocity.pause.Resume(); }
 
 			if ( CurrentState )
 			{
-				RemoveCurrentState( true );
+				StartTransOut();
 			}
 		}
 
@@ -300,6 +428,21 @@ package VerlocityEngine.components
 			if ( CurrentState ) { return CurrentState.toString() }
 
 			return "No State";
+		}
+		
+		public function EnableTransitions():void
+		{
+			bDisableTransitions = false;
+		}
+		
+		public function DisableTransitions():void
+		{
+			bDisableTransitions = true;
+		}
+		
+		public function get IsTransitioning():Boolean
+		{
+			return bTransIn || bTransOut || mcSplash;
 		}
 		
 	}

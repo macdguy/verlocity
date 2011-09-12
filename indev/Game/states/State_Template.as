@@ -5,6 +5,7 @@
 
 	public class State_Template extends verBState
 	{
+		// Called when the state is first created
 		public override function SetupState():void
 		{
 			// Is this state a cutscene?

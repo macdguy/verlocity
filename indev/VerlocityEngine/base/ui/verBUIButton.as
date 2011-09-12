@@ -49,6 +49,7 @@
 
 
 		// override these to customize your button
+		protected function Press():void {} // called when the button was successfully pressed
 		protected function Up():void {} // called when the mouse button is up
 		protected function Down():void {} // called when the mouse is button is down
 		protected function Over():void {} // called when the mouse is over the button (ie. hover)
@@ -126,6 +127,7 @@
 		public function DoButton():void
 		{
 			if ( Boolean( fFunction ) ) { fFunction(); }
+			Press();
 		}
 
 		public override function Dispose():void

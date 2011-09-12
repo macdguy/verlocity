@@ -46,6 +46,7 @@ package VerlocityEngine.components
 		 ****************COMPONENT VARS******************
 		*/
 		private var vEnts:Vector.<verBEnt>;
+		private var bIsPaused:Boolean;
 
 
 		/*
@@ -83,6 +84,8 @@ package VerlocityEngine.components
 		*/
 		public function Think():void
 		{
+			if ( bIsPaused ) { return; }
+
 			var iLength:int = vEnts.length;
 			if ( iLength <= 0 ) { return; } 
 
@@ -98,7 +101,10 @@ package VerlocityEngine.components
 					refCurrent.DeInit();
 					refCurrent.Dispose();
 
-					refCurrent.parent.removeChild( refCurrent );
+					if ( refCurrent.parent )
+					{
+						refCurrent.parent.removeChild( refCurrent );
+					}
 
 					delete vEnts[i];
 					vEnts[i] = null;
@@ -323,6 +329,18 @@ package VerlocityEngine.components
 				i--;
 			}
 		}
+		
+		public function Pause():void
+		{
+			bIsPaused = true;
+		}
+		
+		public function Resume():void
+		{
+			bIsPaused = false;
+		}
+		
+		public function get IsPaused():Boolean { return bIsPaused; }
 
 	}
 

@@ -37,9 +37,9 @@
 		private var aComboKeys:Array;
 
 		private var bMouseDown:Boolean;
-		private var iMx:int; 
-		private var iMy:int;
-		
+		private var iMx:int, iMy:int;
+		private var nMouseWheelDelta:Number;
+
 		private var bHasKeyControls:Boolean = true;
 		private var bHasMouseControls:Boolean = true;
 		
@@ -62,6 +62,7 @@
 			Verlocity.stage.addEventListener( MouseEvent.CLICK, MouseClick );
 			Verlocity.stage.addEventListener( MouseEvent.MOUSE_DOWN, MouseDown );
 			Verlocity.stage.addEventListener( MouseEvent.MOUSE_UP, MouseUp );
+			Verlocity.stage.addEventListener( MouseEvent.MOUSE_WHEEL, MouseWheelDelta );
 		}
 
 		/*
@@ -146,6 +147,13 @@
 
 			bMouseDown = false;
 		}
+		
+		private function MouseWheelDelta( me:MouseEvent ):void
+		{
+			if ( !HasMouseControl ) { return; }
+			
+			nMouseWheelDelta = me.delta;
+		}
 
 
 		/*------------------ PUBLIC -------------------*/
@@ -190,6 +198,11 @@
 		public function MouseIsDown():Boolean
 		{
 			return bMouseDown;
+		}
+		
+		public function MouseWheel():Number
+		{
+			return nMouseWheelDelta;
 		}
 
 		public function get Mx():int { return iMx; }
