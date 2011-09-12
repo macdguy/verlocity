@@ -1,0 +1,311 @@
+﻿package VerlocityEngine.base
+{
+	import flash.display.DisplayObject;
+	import VerlocityEngine.helpers.ElapsedTrigger;
+	
+	import flash.geom.Point;
+
+	import flash.geom.ColorTransform;
+	import fl.motion.Color;
+	
+	import VerlocityEngine.util.mathHelper;
+	import VerlocityEngine.util.colorHelper;
+	import VerlocityEngine.util.angleHelper;
+
+	public class verBScreenObject extends verBMovieClip
+	{
+		protected var uiColor:uint;
+		protected var ctColor:ColorTransform = new ColorTransform( 1, 1, 1, 1 );
+		protected var cTint:Color = new Color();
+
+		protected var bIsBeingRemoved:Boolean;
+		protected var RemoveDelay:ElapsedTrigger;
+		protected var bFadeRemove:Boolean;
+		protected var nFadeSpeed:Number;
+
+		public function verBScreenObject():void
+		{
+			mouseEnabled = false; mouseChildren = false; // This optimizes screen objects a bit.
+		}
+
+		/*
+			 ===================
+			======= HOOKS =======
+			 ===================
+			Override these functions for your own needs.
+			They will be called appropriately.
+		*/
+		protected function OnRemove():void { }
+		
+		
+		/*
+			 =======================
+			======= PROTECTION =======
+			 =======================
+		*/
+		protected var bIsProtected:Boolean;
+		public function SetProtected( bProtected:Boolean = true ):void
+		{
+			bIsProtected = bProtected;
+		}
+
+		public function IsProtected():Boolean
+		{
+			return bIsProtected;
+		}
+
+		/*
+			 ============================
+			======= POSITION/SCALE =======
+			 ============================
+		*/
+
+		/**
+		 * Sets the X and Y position of the screen object.
+		 * @param	iPosX The X position to set the screen object to.
+		 * @param	iPosY The Y position to set the screen object to.
+		 * @usage	Example usage: scrobj.SetPos( 125, 25 );
+		*/
+		public function SetPos( iPosX:int, iPosY:int ):void
+		{
+			x = iPosX; y = iPosY;
+		}
+
+		/**
+		 * Sets the scale of the screen object.
+		 * @param	nScale The scale to scale the screen object to (this effects both X and Y scales).
+		 * @usage	Example usage: scrobj.SetScale( 2 );
+		*/
+		protected var nScale:Number = 1;
+
+		public function SetScale( nSetScale:Number ):void
+		{
+			nScale = nSetScale;
+
+			scaleX = nScale; scaleY = nScale;
+		}
+		
+		public function GetScale():Number
+		{
+			return nScale;
+		}
+		
+		public function SetRotation( iRot:int ):void
+		{
+			rotation = iRot;
+		}
+		
+		public function GetAngle():Point
+		{
+			return angleHelper.AngleOfRotation( rotation );
+		}
+
+		/**
+		 * Returns the absolute Y position.
+		 * @usage	Example usage: scrobj.absY;
+		*/		
+		public function get absX():int
+		{
+			return parent ? ( parent.x + x ) : x;
+		}
+
+		/**
+		 * Returns the absolute Y position.
+		 * @usage	Example usage: scrobj.absY;
+		*/		
+		public function get absY():int
+		{
+			return parent ? ( parent.y - y ) : y;
+		}
+
+
+		/**
+		 * Cleans the entity's data.
+		 * @usage	Example usage: ent.Dispose();
+		*/
+		public function Dispose():void
+		{
+			if ( !bIsDead ) { Remove(); }
+
+			stop();
+			graphics.clear();
+			filters = null;
+
+			nScale = NaN;
+			bIsBeingRemoved = false;
+
+			uiColor = NaN;
+			ctColor = null;
+			cTint = null;
+
+			RemoveDelay = null;
+			bFadeRemove = false;
+			nFadeSpeed = NaN;
+		}
+
+		public function SetColor( newColor:uint, nAlpha:Number = 1 ):void
+		{
+			ctColor.color = newColor;
+			ctColor.alphaMultiplier = alpha;
+			transform.colorTransform = ctColor;
+
+			uiColor = newColor;
+			newColor = NaN;
+		}
+
+		public function SetColorRGB( r:int, g:int, b:int, nAlpha:Number = 1 ):void
+		{
+			SetColor( colorHelper.RGBtoHEX( r, g, b ), nAlpha );
+		}
+
+		public function GetColor():uint
+		{
+			return uiColor || 0xFFFFFF;
+		}
+		
+		public function SetTint( amount:Number, r:int = 255, g:int = 255, b:int = 255 ):void
+		{
+			var newColor:uint = colorHelper.RGBtoHEX( r, g, b );
+			
+			cTint.setTint( newColor, amount );
+			transform.colorTransform = cTint;	
+
+			newColor = NaN;
+		}
+
+		public function RemoveTint():void
+		{
+			cTint.alphaMultiplier = 0;
+			transform.colorTransform = cTint;
+		}
+
+		public function SetAlpha( alpha:Number ):void
+		{
+			ctColor.alphaMultiplier = alpha;
+			transform.colorTransform = ctColor;
+		}
+		
+		public function GetAlpha():Number
+		{
+			return ctColor.alphaMultiplier;
+		}
+		
+		public function FadeColors( oldR:int, oldG:int, oldB:int, newR:int, newG:int, newB:int, step:Number = 1 ):void
+		{
+			var oldColor:uint = colorHelper.RGBtoHEX( oldR, oldG, oldB );
+			var newColor:uint = colorHelper.RGBtoHEX( newR, newG, newB );
+
+			ctColor.color = Color.interpolateColor( oldColor, newColor, step );
+			transform.colorTransform = ctColor;
+		}
+
+		public function DrawRect( drawX:int, drawY:int, drawWidth:Number, drawHeight:Number ):void
+		{
+			graphics.beginFill( GetColor() );
+			graphics.drawRect( drawX, drawY, drawWidth, drawHeight );
+			graphics.endFill();
+		}
+
+		public function SetRemoveTime( iMiliSecs:int, bFadeOut:Boolean = false, nSetFadeSpeed:Number = .05 ):void
+		{
+			RemoveDelay = new ElapsedTrigger( iMiliSecs );
+			bFadeRemove = bFadeOut;
+			nFadeSpeed = nSetFadeSpeed;
+		}
+		
+
+
+		/*
+			 =============================
+			======= CLEANUP/REMOVAL =======
+			 =============================
+		*/
+		protected var bIsDead:Boolean;
+
+		/**
+		 * Marks the screen object for removal.
+		 * @usage	Example usage: scrobj.Remove();
+		*/
+		public function Remove():void
+		{
+			if ( bIsDead ) { return; }
+
+			bIsDead = true;
+			OnRemove();
+		}
+
+		/**
+		 * Returns if the screen object is dead.  Used to automatically clean remove the screen object.
+		 * @usage	Example usage: scrobj.IsDead();
+		*/
+		public function IsDead():Boolean
+		{
+			return bIsDead;
+		}
+
+		public function FadeRemove( nSetFadeSpeed:Number = .05 ):void
+		{
+			if ( bIsBeingRemoved ) { return; }
+
+			SetRemoveTime( 0, true, nSetFadeSpeed );
+		}
+
+		public function TimedRemoveThink():void
+		{
+			if ( !RemoveDelay || !RemoveDelay.IsTriggered() ) { return; }
+
+			if ( !bIsBeingRemoved ) { bIsBeingRemoved = true; }
+
+			if ( bFadeRemove )
+			{
+				if ( GetAlpha() > 0 )
+				{
+					SetAlpha( GetAlpha() - nFadeSpeed );
+					return;
+				}
+			}
+
+			Remove();
+		}
+
+
+		/*
+			 =============================
+			========== ANIMATION ==========
+			 =============================
+		*/
+		/**
+		 * Sets the movieclip to a specific labeled frame.
+		 * @param	sString The frame label to set the movieclip to.
+		 * @param	bPlayAnim Set this to false if you want the animation to not play after being set.
+		 * @usage	Example usage: scrobj.SetFrame( "label", true );
+		*/
+		public function SetFrame( sString:String, bPlayAnim:Boolean = true ):void
+		{
+			switch( bPlayAnim )
+			{
+				case true: gotoAndPlay( sString );
+				case false: gotoAndStop( sString );
+			}
+		}
+
+		/**
+		 * Sets the movieclip to a random frame.
+		 * @usage	Example usage: scrobj.SetRandomFrame()
+		*/		
+		public function SetRandomFrame():void
+		{
+			var i:int = mathHelper.Rand( 1, totalFrames );
+			gotoAndStop( i );
+		}
+
+
+		
+		public function Clear():void
+		{
+			graphics.clear();
+		}
+		
+		
+	}
+}
