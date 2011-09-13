@@ -184,6 +184,8 @@ package VerlocityEngine.components
 			if ( VerlocitySettings.SHOW_PAUSEMENU )
 			{
 				guiPauseMenu = new verGUIPauseMenu( Verlocity.ScrW / 2, Verlocity.ScrH / 2 );
+				guiPauseMenu.scaleX = VerlocitySettings.GUI_SCALE;
+				guiPauseMenu.scaleY = VerlocitySettings.GUI_SCALE;
 			}
 			else
 			{
@@ -285,6 +287,7 @@ import VerlocityEngine.base.ui.verBUIButton;
 import VerlocityEngine.base.ui.verBUIScroll;
 
 import VerlocityEngine.Verlocity;
+import VerlocityEngine.VerlocitySettings;
 
 internal class verGUIPauseMenu extends Sprite
 {
@@ -345,7 +348,7 @@ internal class verGUIPauseMenu extends Sprite
 			graphics.drawRect( 0, iPosYLast + 10, menuWidth, 1 );
 		graphics.endFill();
 		
-		x = iPosX - ( menuWidth / 2 ); y = iPosY - ( menuHeight / 2 );
+		x = iPosX - ( menuWidth / 2 ) * VerlocitySettings.GUI_SCALE; y = iPosY - ( menuHeight / 2 ) * VerlocitySettings.GUI_SCALE;
 		
 		
 

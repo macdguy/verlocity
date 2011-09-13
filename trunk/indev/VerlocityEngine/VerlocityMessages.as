@@ -90,7 +90,7 @@ package VerlocityEngine
 				
 				if ( message )
 				{
-					var iYOffset:int = ( i * 30 ) + 10;
+					var iYOffset:int = ( i * message[0].height ) + ( 20 * VerlocitySettings.GUI_SCALE );
 					if ( iYOffset != message[0].y )
 					{
 						message[0].y -= mathHelper.Ease( message[0].y, iYOffset, 5 );
@@ -111,12 +111,11 @@ package VerlocityEngine
 		{
 			if ( !VerlocitySettings.SHOW_MESSAGES || !sMessage || sMessage == "" ) { return; }
 
-			var iYOffset:int = ( vMessages.length * 30 ) + 10;
-			
 			var newMessage:verBUIText = new verBUIText();
 				newMessage.SetText( sMessage, messageFormat );
-				newMessage.SetPos( Verlocity.ScrW - newMessage.GetWidth() - 10, iYOffset );
+				newMessage.SetPos( Verlocity.ScrW - ( newMessage.GetWidth() * VerlocitySettings.GUI_SCALE ) - 10, ( vMessages.length * newMessage.height ) + ( 20 * VerlocitySettings.GUI_SCALE ) );
 				newMessage.DrawRect( 0x00000, 1, newMessage.GetWidth() + 5, 30, false, 0, 0, 0, true, 10, -2, 0 );
+				newMessage.SetScale( VerlocitySettings.GUI_SCALE );
 			Verlocity.stage.addChild( newMessage );
 
 			vMessages.push( new Array( newMessage, getTimer() + iTimeToDisplay ) );
