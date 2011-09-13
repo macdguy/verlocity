@@ -1,6 +1,7 @@
 ﻿package VerlocityEngine.base
 {
 	import flash.display.DisplayObject;
+	import flash.geom.Matrix;
 	import VerlocityEngine.helpers.ElapsedTrigger;
 	
 	import flash.geom.Point;
@@ -100,6 +101,70 @@
 			return angleHelper.AngleOfRotation( rotation );
 		}
 
+		/*
+		 * ScaleAround and RotateAround are credited to Tim Whitlock
+		 * http://timwhitlock.info/blog/2008/04/13/scale-rotate-around-an-arbitrary-centre/
+		*/
+		public function ScaleAround( offsetX:Number, offsetY:Number, absScaleX:Number, absScaleY:Number ):void
+		{ 
+			// scaling will be done relatively 
+			var relScaleX:Number = absScaleX / scaleX;
+			var relScaleY:Number = absScaleY / scaleY;
+
+			// map vector to centre point within parent scope 
+			var AC:Point = new Point( offsetX, offsetY );
+			AC = localToGlobal( AC );
+			AC = parent.globalToLocal( AC );
+
+			// current registered postion AB 
+			var AB:Point = new Point( x, y );
+
+			// CB = AB - AC, this vector that will scale as it runs from the centre 
+			var CB:Point = AB.subtract( AC );
+			CB.x *= relScaleX;
+			CB.y *= relScaleY;
+
+			// recaulate AB, this will be the adjusted position for the clip 
+			AB = AC.add( CB );
+
+			// set actual properties 
+			scaleX *= relScaleX;
+			scaleY *= relScaleY;
+			x = AB.x;
+			y = AB.y;
+		}
+
+		public function RotateAround( offsetX:Number, offsetY:Number, toDegrees:Number ):void
+		{ 
+			var relDegrees:Number = toDegrees - ( rotation % 360 ); 
+			var relRadians:Number = Math.PI * relDegrees / 180; 
+
+			var M:Matrix = new Matrix( 1, 0, 0, 1, 0, 0 );
+			M.rotate( relRadians ); 
+
+			// map vector to centre point within parent scope 
+			var AC:Point = new Point( offsetX, offsetY ); 
+			AC = localToGlobal( AC ); 
+			AC = parent.globalToLocal( AC ); 
+
+			// current registered postion AB 
+			var AB:Point = new Point( this.x, this.y ); 
+
+			// point to rotate, offset position from virtual centre
+			var CB:Point = AB.subtract( AC ); 
+
+			// rotate CB around imaginary centre  
+			// then get new AB = AC + CB 
+			CB = M.transformPoint( CB ); 
+			AB = AC.add( CB ); 
+
+			// set real values on clip 
+			rotation = toDegrees; 
+			x = AB.x; 
+			y = AB.y; 
+		}
+
+
 		/**
 		 * Returns the absolute Y position.
 		 * @usage	Example usage: scrobj.absY;
@@ -116,6 +181,16 @@
 		public function get absY():int
 		{
 			return parent ? ( parent.y - y ) : y;
+		}
+		
+		public function get centerX():int
+		{
+			return width / 2;
+		}
+
+		public function get centerY():int
+		{
+			return height / 2;
 		}
 
 

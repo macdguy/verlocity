@@ -218,9 +218,83 @@ package VerlocityEngine.components
 			sprBackground.graphics.endFill();
 		}
 		
-		public function SendToTop( layer:verBLayer ):void
+		public function SendToTop( sName:String ):void
 		{
-			layer.parent.setChildIndex( layer, 0 );
+			if ( objLayers[sName] == null )
+			{
+				Verlocity.Trace( "Layers", sName + VerlocityLanguage.T( "GenericMissing" ) );
+				return;
+			}
+
+			objLayers[sName].parent.setChildIndex( objLayers[sName], 0 );
+		}
+		
+		public function Parallax( aLayers:Array, nScrollX:Number = 0.0, nScrollY:Number = 0.0, nScrollZ:Number = 0.0 ):void
+		{
+			if ( aLayers.length < 2 ) { return; }
+
+			// Check if the first exists
+			if ( objLayers[ aLayers[0] ] == null )
+			{
+				Verlocity.Trace( "Layers", objLayers[ aLayers[0] ] + VerlocityLanguage.T( "GenericMissing" ) );
+				return;
+			}
+
+			// Offset the first
+			objLayers[ aLayers[0] ].x -= nScrollX;
+			objLayers[ aLayers[0] ].y -= nScrollY;
+			ScaleLayer( aLayers[0], nScrollZ, Verlocity.ScrW / 2, Verlocity.ScrH / 2 );
+
+			// Offset the rest
+			for ( var i:int = 1; i < aLayers.length; i++ )
+			{
+				// Check if the layers are valid
+				if ( objLayers[ aLayers[i] ] == null )
+				{
+					Verlocity.Trace( "Layers", objLayers[ aLayers[i] ] + VerlocityLanguage.T( "GenericMissing" ) );
+					return;
+				}
+				
+				objLayers[ aLayers[i] ].x -= nScrollX / ( i + 1 );
+				objLayers[ aLayers[i] ].y -= nScrollY / ( i + 1 );
+				ScaleLayer( aLayers[i], nScrollZ / ( i + 1 ), Verlocity.ScrW / 2, Verlocity.ScrH / 2 );
+			}
+		}
+		
+		public function ScaleLayer( sName:String, nAddScale:Number, iCenterX:int, iCenterY:int ):void
+		{
+			if ( nAddScale == 0 ) { return; }
+
+			if ( objLayers[sName] == null )
+			{
+				Verlocity.Trace( "Layers", sName + VerlocityLanguage.T( "GenericMissing" ) );
+				return;
+			}
+			
+			objLayers[sName].ScaleAround( iCenterX, iCenterY,
+										  objLayers[sName].scaleX + nAddScale,
+										  objLayers[sName].scaleY + nAddScale );
+		}
+		
+		public function Scroll( sName:String, nScrollX:Number = 0, iScrollWidth:int = 0, nScrollY:Number = 0, iScrollHeight:int = 0 ):void
+		{
+			if ( objLayers[sName] == null )
+			{
+				Verlocity.Trace( "Layers", sName + VerlocityLanguage.T( "GenericMissing" ) );
+				return;
+			}
+
+			objLayers[sName].x -= nScrollX;
+			if ( iScrollWidth > 0 && objLayers[sName].x <= -iScrollWidth )
+			{
+				objLayers[sName].x = 0;
+			}
+
+			objLayers[sName].y -= nScrollY;
+			if ( iScrollHeight > 0 && objLayers[sName].y <= -iScrollHeight )
+			{
+				objLayers[sName].y = 0;
+			}
 		}
 	}
 }

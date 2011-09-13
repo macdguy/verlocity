@@ -75,8 +75,8 @@ package VerlocityEngine
 		 * STATE_TRANSITION_OUT defines the transition effect that occurs
 		 * when a state is being removed (fading out).
 		*/
-		public static var STATE_TRANSITION_IN:Class;
-		public static var STATE_TRANSITION_OUT:Class;
+		public static var STATE_TRANSITION_IN:Class = TransIn;
+		public static var STATE_TRANSITION_OUT:Class = TransOut;
 
 		
 		/*
@@ -85,6 +85,12 @@ package VerlocityEngine
 		 * EAR BLASTINGLY loud.  If you wish to prevent this, you can.
 		*/
 		public static const START_VOLUME:Number = 1.0;
+		
+		/*
+		 * GUI_SCALE sets the scale factor of all Verlocity GUI.
+		 * This is useful if you have smaller resolutions
+		*/
+		public static const GUI_SCALE:Number = 1;
 		
 		/*
 		 * SHOW_MESSAGES enables/disables VerlocityMessages.
@@ -127,9 +133,9 @@ package VerlocityEngine
 		 * on the right click menu.
 		 * If you wish to not have this, simply set RIGHTCLICK_PROMOTE to false.
 		*/
-		public static var RIGHTCLICK_PROMOTE:Boolean = true;
-		public static var RIGHTCLICK_PROMOTETEXT:String = "Powered by VerlocityEngine.com";
-		public static var RIGHTCLICK_PROMOTEURL:String = "http://www.verlocityengine.com";
+		public static const RIGHTCLICK_PROMOTE:Boolean = true;
+		public static const RIGHTCLICK_PROMOTETEXT:String = "Powered by VerlocityEngine.com";
+		public static const RIGHTCLICK_PROMOTEURL:String = "http://www.verlocityengine.com";
 
 		
 		/*
@@ -139,7 +145,7 @@ package VerlocityEngine
 		 * prevent users from bypassing different input behaviors
 		 * (such as locating hidden buttons).
 		*/
-		public static var DISABLE_TAB:Boolean = true;
+		public static const DISABLE_TAB:Boolean = true;
 
 		
 		/*
