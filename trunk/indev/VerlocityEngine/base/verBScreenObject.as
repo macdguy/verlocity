@@ -1,10 +1,10 @@
 ﻿package VerlocityEngine.base
 {
 	import flash.display.DisplayObject;
-	import flash.geom.Matrix;
 	import VerlocityEngine.helpers.ElapsedTrigger;
 	
 	import flash.geom.Point;
+	import flash.geom.Matrix;
 
 	import flash.geom.ColorTransform;
 	import fl.motion.Color;
@@ -171,7 +171,12 @@
 		*/		
 		public function get absX():int
 		{
-			return parent ? ( parent.x + x ) : x;
+			if ( parent )
+			{
+				return parent.localToGlobal( new Point( x, y ) ).x;
+			}
+			
+			return x;
 		}
 
 		/**
@@ -180,7 +185,12 @@
 		*/		
 		public function get absY():int
 		{
-			return parent ? ( parent.y - y ) : y;
+			if ( parent )
+			{
+				return parent.localToGlobal( new Point( x, y ) ).y;
+			}
+			
+			return y;
 		}
 		
 		public function get centerX():int
@@ -325,7 +335,7 @@
 			SetRemoveTime( 0, true, nSetFadeSpeed );
 		}
 
-		public function TimedRemoveThink():void
+		protected function TimedRemoveThink():void
 		{
 			if ( !RemoveDelay || !RemoveDelay.IsTriggered() ) { return; }
 

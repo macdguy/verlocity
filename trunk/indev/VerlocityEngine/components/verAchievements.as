@@ -12,8 +12,12 @@
 */
 package VerlocityEngine.components 
 {
+	import flash.events.Event;
 	import VerlocityEngine.Verlocity;
 	import VerlocityEngine.VerlocityLanguage;
+	import VerlocityEngine.VerlocitySettings;
+	import VerlocityEngine.util.mathHelper;
+	import flash.utils.getTimer;
 
 	public class verAchievements extends Object
 	{
@@ -35,12 +39,14 @@ package VerlocityEngine.components
 		 ****************COMPONENT VARS******************
 		*/
 		private var objAcheivements:Object;
+		private var vGUIAchievements:Vector.<Array>;
+		private var guiAchiList:verGUIAchiList;
 
-		private const ACHI_DISPNAME:int = 0;
-		private const ACHI_DESC:int = 1;
-		private const ACHI_DATA:int = 2;
-		private const ACHI_MAX:int = 3;
-		private const ACHI_UNLOCKED:int = 4;
+		public const ACHI_DISPNAME:int = 0;
+		public const ACHI_DESC:int = 1;
+		public const ACHI_DATA:int = 2;
+		public const ACHI_MAX:int = 3;
+		public const ACHI_UNLOCKED:int = 4;
 		
 		
 		/*
@@ -49,7 +55,10 @@ package VerlocityEngine.components
 		private function Construct():void
 		{
 			objAcheivements = new Object();
+			
+			Verlocity.stage.addEventListener( Event.ENTER_FRAME, Think );
 		}
+
 
 		/*
 		 *************COMPONENT CONCOMMANDS**************
@@ -58,12 +67,12 @@ package VerlocityEngine.components
 		{
 			if ( !Verlocity.console ) { return; }
 
-			Verlocity.console.Register( "achi_set", function( achievement:String ):void
+			Verlocity.console.Register( "achi_unlock", function( achievement:String ):void
 			{
 				if ( !Get( achievement ) ) { Verlocity.console.Output( "Achievement not valid.  Use achi_list to list all." ); return; }
 				if ( IsUnlocked( achievement ) ) { Verlocity.console.Output( "Achievement already unlocked!" ); return; }
 
-				Set( achievement );
+				Unlock( achievement );
 			}, "Unlock an achievement." );
 
 			Verlocity.console.Register( "achi_info", function( achievement:String ):void
@@ -93,6 +102,56 @@ package VerlocityEngine.components
 		
 		
 		/*
+		 ****************COMPONENT LOOP (NOT PART OF VERENGINE)******************
+		*/
+		private function Think( e:Event ):void
+		{
+			if ( !vGUIAchievements ) { return; }
+
+			var iLength:int = vGUIAchievements.length;
+			if ( iLength <= 0 ) { vGUIAchievements = null; return; } 
+
+			var i:int = iLength - 1;
+			var achi:Array;
+
+			while( i >= 0 )
+			{
+				achi = vGUIAchievements[i];
+
+				if ( achi[1] < getTimer() )
+				{
+					if ( achi[0].alpha > 0 )
+					{
+						achi[0].alpha -= 0.025;
+						achi[0].y -= mathHelper.Ease( achi[0].y, Verlocity.ScrH, 20 );
+					}
+					else
+					{
+						achi[0].Dispose();
+						Verlocity.layers.layerVerlocity.removeChild( achi[0] );
+
+						delete vGUIAchievements[i];
+						vGUIAchievements[i] = null;
+						vGUIAchievements.splice( i, 1 );
+					}
+				}
+				
+				if ( achi && achi[0].alpha >= 1 )
+				{
+					var iYOffset:int = Verlocity.ScrH - 75 - ( i * achi[0].height );
+					if ( iYOffset != achi[0].y )
+					{
+						achi[0].y -= mathHelper.Ease( achi[0].y, iYOffset, 10 );
+					}
+				}
+
+				achi = null;
+				i--;
+			}	
+		}
+		
+		
+		/*
 		 *************COMPONENT FUNCTIONS****************
 		*/
 		
@@ -100,11 +159,21 @@ package VerlocityEngine.components
 		private function AchievementUnlocked( sName:String ):void
 		{
 			objAcheivements[sName][ ACHI_UNLOCKED ] = true;
-			
+
+			// Get readable info
 			var sDisplayName:String = objAcheivements[sName][ ACHI_DISPNAME ];
 			var sDesc:String = objAcheivements[sName][ ACHI_DESC ];
 
-			Verlocity.layers.layerVerlocity.addChild( new verGUIAchievement( sDisplayName, sDesc ) );
+			// Display GUI
+			if ( !vGUIAchievements ) { vGUIAchievements = new Vector.<Array>(); }
+
+			var achi:verGUIAchievement = new verGUIAchievement( sDisplayName, sDesc );
+				achi.SetPos( Verlocity.ScrW - ( achi.width * VerlocitySettings.GUI_SCALE ), Verlocity.ScrH - ( vGUIAchievements.length * achi.height ) );
+				achi.SetScale( VerlocitySettings.GUI_SCALE );
+			Verlocity.layers.layerVerlocity.addChild( achi );
+			
+
+			vGUIAchievements.push( new Array( achi, getTimer() + 5000 ) );
 
 			Verlocity.Trace( "Achievements", "Achievement unlocked! " + sDisplayName );
 		}
@@ -215,82 +284,279 @@ package VerlocityEngine.components
 		{
 			return objAcheivements[sName];
 		}
+		
+		public function GetAll():Object
+		{
+			return objAcheivements;
+		}
+		
+		public function OpenGUI():void
+		{
+			if ( guiAchiList ) { CloseGUI(); }
+
+			guiAchiList = new verGUIAchiList( Verlocity.ScrW / 2, Verlocity.ScrH / 2 );
+				guiAchiList.SetScale( VerlocitySettings.GUI_SCALE );
+			Verlocity.layers.layerUI.addChild( guiAchiList );
+		}
+		
+		public function CloseGUI():void
+		{
+			if ( !guiAchiList ) { return; }
+
+			Verlocity.layers.layerUI.removeChild( guiAchiList );
+
+			guiAchiList.Dispose();
+			guiAchiList = null;
+		}
 	}
 }
 
 
-import flash.display.Sprite;
-import flash.events.Event;
-
-import flash.text.TextField;
+import VerlocityEngine.base.ui.verBUI;
+import VerlocityEngine.base.ui.verBUIBar;
+import VerlocityEngine.base.ui.verBUIText;
 import flash.text.TextFormat;
-import flash.utils.getTimer;
 
-import VerlocityEngine.Verlocity;
 
-internal class verGUIAchievement extends Sprite
+/* Font Formats */
+internal const nameFormat:TextFormat = new TextFormat( "_sans", 20, 0xFFFFFF, true );
+internal const descFormat:TextFormat = new TextFormat( "_sans", 14, 0xFFFFFF );
+
+/* Sizing */
+internal const achiWidth:int = 255;
+internal const achiHeight:int = 75;
+
+internal class verGUIAchievement extends verBUI
 {
-	private const txtFormat:TextFormat = new TextFormat( "Arial Bold", 24 );
-	private var iLifeTime:int;
-
 	public function verGUIAchievement( sName:String, sDesc:String ):void
 	{
-		var iWidth:int = 255;
-		var iHeight:int = 75;
-
-		x = Verlocity.ScrW - iWidth;
-		y = Verlocity.ScrH - iHeight;
-
-		graphics.beginFill( 0x333333, .5 );
-			graphics.drawRect( 0, 0, iWidth, iHeight );
-		graphics.endFill();
+		// BG
+		DrawRect( 0x33333, .5, achiWidth, achiHeight );
 		
-		graphics.beginFill( 0xE68C32, 1 );
-			graphics.drawRect( 4, 4, iWidth - 8, iHeight - 8 );
-		graphics.endFill();
+		// Inside
+		DrawRect( 0x222222, 1, achiWidth - 12, achiHeight - 12, true, 3, 0xE68C32, 1, false, NaN, 6, 6 );
 		
-		graphics.beginFill( 0x222222, 1 );
-			graphics.drawRect( 6, 6, iWidth - 12, iHeight - 12 );
-		graphics.endFill();
-		
-
-		var achName:TextField = new TextField();
-		achName.x = 8; achName.y = 4;
-			achName.textColor = 0xFFFFFF;
-			achName.width = iWidth - 6;
-			achName.scaleX = 2; achName.scaleY = 2;
-			achName.setTextFormat( txtFormat );
-			achName.selectable = false;
-			achName.text = sName;
+		var achName:verBUIText = new verBUIText();
+			achName.SetText( sName, nameFormat );
+			achName.SetPos( 6, 8 );
+			achName.SetWidth( achiWidth - 12 );
 		addChild( achName );
-
-		var achDesc:TextField = new TextField();
-		achDesc.x = 10; achDesc.y = 35;
-			achDesc.width = iWidth - 8; achDesc.height = iHeight - 8;
-			achDesc.textColor = 0xCCCCCC;
-			achDesc.scaleX = 1.15; achDesc.scaleY = 1.15;
-			achDesc.setTextFormat( txtFormat );
-			achDesc.selectable = false;
-			achDesc.text = sDesc;
-		addChild( achDesc );
-
-		iLifeTime = getTimer() + 5000;
-
-		addEventListener( Event.ENTER_FRAME, Think, false, 0, true );
-	}
 		
-	private function Think( e:Event ):void
-	{
-		if ( iLifeTime > getTimer() ) { return; }
+		var achDesc:verBUIText = new verBUIText();
+			achDesc.SetText( sDesc, descFormat );
+			achDesc.SetPos( 24, 36 );
+			achDesc.SetWidth( achiWidth - 48 );
+			achDesc.SetHeight( achiHeight - 18 );
+		addChild( achDesc );
+	}
 
-		if ( alpha > 0 )
+	public override function Dispose():void
+	{
+		for ( var i:int = 0; i < numChildren; i++ )
 		{
-			alpha -= .025;
-			y += .75;
-			return;
+			var child:verBUI = verBUI( getChildAt( i ) );
+			child.Dispose();
+
+			removeChildAt( i );
+			i--;
+		}
+		
+		Clear();
+	}
+}
+
+
+
+import VerlocityEngine.base.ui.verBUIButton;
+
+import VerlocityEngine.Verlocity;
+import VerlocityEngine.VerlocitySettings;
+
+
+/* Font Formats */
+internal const achiFormat:TextFormat = new TextFormat( "_sans", 30, 0xFFFFFF );
+internal const achiMenuFormat:TextFormat = new TextFormat( "_sans", 16, 0xFFFFFF, true );
+
+/* Sizing */
+internal var menuWidth:int = 300;
+internal var menuHeight:int = 400;
+
+internal class verGUIAchiList extends verBUI
+{
+	public function verGUIAchiList( iPosX:int, iPosY:int ):void
+	{
+		// Achi Text
+		var achiText:verBUIText = new verBUIText();
+			achiText.SetText( "ACHIEVEMENTS", achiFormat );
+			achiText.SetWidth( menuWidth );
+		addChild( achiText );	
+
+		// Achi List
+		//======================
+		var iPosYLast:int = ( achiText.y + achiText.height );
+
+		for ( var sAchievement:String in Verlocity.achievements.GetAll() )
+		{
+			var achi:verGUIAchiProgress = new verGUIAchiProgress( Verlocity.achievements.Get( sAchievement ) );
+				achi.SetPos( 0, iPosYLast + 2 );
+			addChild( achi );
+			
+			iPosYLast = achi.y + achi.height;
+		}
+		
+		menuHeight = iPosYLast + 50;
+
+		// Achi Menu BG
+		// ======================
+		graphics.beginFill( 0x000000, 1 );
+			//graphics.lineStyle( 1, 0xFF9900 );
+			graphics.drawRect( 0, 0, menuWidth, menuHeight );
+		graphics.endFill();
+		
+		graphics.beginFill( 0x000000, 1 );
+			graphics.drawRect( 0, 0, menuWidth, 35 );
+			graphics.drawRect( 0, iPosYLast + 3, menuWidth, menuHeight - iPosYLast - 2 );
+
+			graphics.lineStyle( 1, 0xFF9900 );
+			graphics.drawRect( 0, 35, menuWidth, 1 );
+			graphics.drawRect( 0, iPosYLast + 3, menuWidth, 1 );
+		graphics.endFill();
+		
+		x = iPosX - ( menuWidth / 2 ) * VerlocitySettings.GUI_SCALE;
+		y = iPosY - ( menuHeight / 2 ) * VerlocitySettings.GUI_SCALE;
+
+		var achiClose:verGUIAchiButton = new verGUIAchiButton( "CLOSE", achiMenuFormat, ( menuWidth / 2 ) - ( 170 / 2 ), menuHeight - 35,
+			function():void {
+				Verlocity.achievements.CloseGUI();
+			}, 170 );
+		addChild( achiClose );
+	}
+	
+	public override function Dispose():void
+	{
+		for ( var i:int = 0; i < numChildren; i++ )
+		{
+			var child:verBUI = verBUI( getChildAt( i ) );
+			child.Dispose();
+
+			removeChildAt( i );
+			i--;
+		}
+	}
+}
+
+
+internal const achiProgressHeight:int = 75;
+
+internal class verGUIAchiProgress extends verBUI
+{
+	public function verGUIAchiProgress( aAchievement:Array ):void
+	{
+		// Highlight if achieved
+		var achiColor:uint = 0xE68C32;
+		
+		if ( !aAchievement[ Verlocity.achievements.ACHI_UNLOCKED ] )
+		{
+			achiColor = 0xCCCCCC;
+			alpha = .5;
 		}
 
-		parent.removeChild( this );	
-		removeEventListener( Event.ENTER_FRAME, Think );
+		// BG
+		DrawRect( 0x222222, 1, menuWidth, achiProgressHeight, true, 2, achiColor );
+		
+		// Name
+		var achName:verBUIText = new verBUIText();
+			achName.SetText( aAchievement[ Verlocity.achievements.ACHI_DISPNAME ], achiMenuFormat );
+			achName.SetPos( 0, 0 );
+			achName.SetWidth( menuWidth );
+		addChild( achName );
+		
+		// Description
+		var achDesc:verBUIText = new verBUIText();
+			achDesc.SetText( aAchievement[ Verlocity.achievements.ACHI_DESC ], descFormat );
+			achDesc.SetPos( 0, 20 );
+			achDesc.SetWidth( menuWidth );
+			achDesc.SetHeight( menuWidth - 18 );
+		addChild( achDesc );
+		
+		// Progress Bar
+		var nCurrentPercent:Number = aAchievement[ Verlocity.achievements.ACHI_DATA ] / aAchievement[ Verlocity.achievements.ACHI_MAX ];
+		var achProgress:verBUIBar = new verBUIBar();
+			achProgress.SetPos( 10, 50 );
+			achProgress.CreateBar( menuWidth - 20, 20, nCurrentPercent, 0xCCCCCC, 1, 0xFFFFFF, 1 );
+		addChild( achProgress );
+
+		// Progress Text
+		var sProgress:String = aAchievement[ Verlocity.achievements.ACHI_DATA ] + " / " + aAchievement[ Verlocity.achievements.ACHI_MAX ];
+		if ( aAchievement[ Verlocity.achievements.ACHI_UNLOCKED ] ) { sProgress = "UNLOCKED"; }
+
+		var achTextProgress:verBUIText = new verBUIText();
+			achTextProgress.SetText( sProgress, achiMenuFormat );
+			if ( aAchievement[ Verlocity.achievements.ACHI_UNLOCKED ] ) { achTextProgress.SetTextColor( 0x00000 ); }
+			achTextProgress.SetPos( 10, 50 );
+			achTextProgress.SetWidth( menuWidth - 20 );
+		addChild( achTextProgress );
 	}
+
+	public override function Dispose():void
+	{
+		for ( var i:int = 0; i < numChildren; i++ )
+		{
+			var child:verBUI = verBUI( getChildAt( i ) );
+			child.Dispose();
+
+			removeChildAt( i );
+			i--;
+		}
+		
+		Clear();
+	}
+}
+
+
+internal class verGUIAchiButton extends verBUIButton
+{
+	private var iWidth:int;
+
+	public function verGUIAchiButton( sText:String, tfFormat:TextFormat, iPosX:int, iPosY:int, fButton:Function, iSetWidth:int ):void
+	{
+		SetText( sText, tfFormat );
+		SetButton( fButton );
+		SetOriginPos( iPosX, iPosY );
+		
+		iWidth = iSetWidth;
+		SetWidth( iWidth );
+		
+		tfTextField.y = .5;
+
+		DrawBG();
+	}
+
+	protected override function DrawBG():void
+	{
+		Clear();
+		DrawRect( 0xFFFFFF, 0, iWidth, 20, true, 2, 0xFFFFFF );
+	}
+
+	protected override function Down():void
+	{
+		Clear();
+		DrawRect( 0xCA7900, 1, iWidth, 20, true, 2, 0xFFFFFF );
+		SetPos( originX, originY + 2 );
+	}
+
+	protected override function Up():void { Over(); }
+	protected override function Over():void
+	{
+		Clear();
+		DrawRect( 0xFF9900, 1, iWidth, 20, true, 2, 0xFFFFFF );
+		ResetPos();
+	}
+
+	protected override function Out():void
+	{
+		Clear();
+		DrawRect( 0xFFFFFF, 0, iWidth, 20, true, 2, 0xFFFFFF );
+		ResetPos();
+	}	
 }

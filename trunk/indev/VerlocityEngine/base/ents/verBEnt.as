@@ -2,10 +2,14 @@
 {
 	import flash.display.DisplayObject;
 	import flash.display.Sprite;
+	import flash.geom.Point;
+	import flash.geom.Rectangle;
 	
 	import VerlocityEngine.Verlocity;
 	import VerlocityEngine.base.verBScreenObject;
 	import VerlocityEngine.base.sound.verBSound;
+	
+	import VerlocityEngine.util.mathHelper;
 
 	public class verBEnt extends verBScreenObject
 	{
@@ -22,6 +26,7 @@
 		{
 			PhysicsUpdate();
 			ScreenThink();
+			BoundaryThink();
 		}
 
 
@@ -85,6 +90,8 @@
 			entOwner = null;
 
 			bIsSpawned = false;
+			rectBounds = null;
+			iBoundPadding = NaN;
 		
 			bPhysicsEnabled = false;
 			nVelX = NaN; nVelY = NaN; nGravityX = NaN; nGravityY = NaN;
@@ -226,6 +233,29 @@
 			}
 		}
 
+		protected var rectBounds:Rectangle;
+		protected var iBoundPadding:int;
+
+		private function BoundaryThink():void
+		{
+			if ( !rectBounds ) { return; }
+
+			x = mathHelper.Clamp( x, rectBounds.x + iBoundPadding, rectBounds.width - ( width - iBoundPadding ) );
+			y = mathHelper.Clamp( y, rectBounds.y + iBoundPadding, rectBounds.height - ( height - iBoundPadding ) );
+		}
+		
+		public function SetBounds( rectSetBounds:Rectangle, iPadding:int = 0 ):void
+		{
+			rectBounds = rectSetBounds;
+			iBoundPadding = iPadding;
+		}
+		
+		public function ClearBounds():void
+		{
+			rectBounds = null;
+			iBoundPadding = NaN;
+		}
+
 		/**
 		 * Returns if the entity is within the boundaries of the screen.
 		 * @usage	Example usage: ent.IsOnScreen();
@@ -233,10 +263,14 @@
 		public function IsOnScreen():Boolean
 		{
 			var iOffset:int = 100;
-			var iMaxX:int = ( Verlocity.ScrW + iOffset );
-			var iMaxY:int = ( Verlocity.ScrH + iOffset );
-
-			if ( absX < -iOffset || absX > iMaxX || absY < -iMaxY || absY > iOffset )
+			var rectBounds:Rectangle = new Rectangle( -iOffset, -iOffset, Verlocity.ScrW + iOffset, Verlocity.ScrH + iOffset );
+			
+			if ( absX < rectBounds.x || absX > rectBounds.width )
+			{
+				return false;
+			}
+			
+			if ( absY < rectBounds.y || absY > rectBounds.height )
 			{
 				return false;
 			}
