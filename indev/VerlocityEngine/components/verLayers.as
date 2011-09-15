@@ -17,6 +17,7 @@ package VerlocityEngine.components
 	import flash.display.Shape;
 	import flash.display.Sprite;
 	import flash.geom.ColorTransform;
+	import flash.geom.Point;
 
 	import VerlocityEngine.Verlocity;
 	import VerlocityEngine.VerlocityLanguage;
@@ -63,13 +64,20 @@ package VerlocityEngine.components
 		{
 			objLayers = new Object();
 
-			// Verlocity layer for verConsole, verAchievements, VerlocityMessages, and splash.
-			layerVerlocity = new Sprite();
-			Verlocity.stage.addChildAt( layerVerlocity, 0 );
+			// Cutoff mask
+			sCutoff.graphics.beginFill( 0, 0 );
+				sCutoff.graphics.drawRect( 0, 0, Verlocity.ScrW, Verlocity.ScrH );
+			sCutoff.graphics.endFill();
+			Verlocity.stage.addChildAt( sCutoff, 0 );
 
 			// Container layer
 			layerContained = new Sprite();
+			layerContained.mask = sCutoff;
 			Verlocity.stage.addChildAt( layerContained, 0 );
+
+			// Verlocity layer for verConsole, verAchievements, VerlocityMessages, and splash.
+			layerVerlocity = new Sprite();
+			layerContained.addChildAt( layerVerlocity, 0 );
 
 			// UI layer for verUI
 			layerUI = new Sprite();
@@ -77,15 +85,6 @@ package VerlocityEngine.components
 					layerUI.graphics.drawRect( 0, 0, Verlocity.ScrW, Verlocity.ScrH );
 				layerUI.graphics.endFill();
 			layerContained.addChildAt( layerUI, 0 );
-
-			// Cutoff mask
-			sCutoff.graphics.beginFill( 0, 0 );
-				sCutoff.graphics.drawRect( 0, 0, Verlocity.ScrW, Verlocity.ScrH );
-			sCutoff.graphics.endFill();
-			Verlocity.stage.addChildAt( sCutoff, 0 );
-
-			// Mask everything
-			layerContained.mask = sCutoff;
 
 			// ScreenFX layer for verScreenFX
 			layerScrFX = new Sprite();
@@ -243,7 +242,13 @@ package VerlocityEngine.components
 			// Offset the first
 			objLayers[ aLayers[0] ].x -= nScrollX;
 			objLayers[ aLayers[0] ].y -= nScrollY;
-			ScaleLayer( aLayers[0], nScrollZ, Verlocity.ScrW / 2, Verlocity.ScrH / 2 );
+			
+			// Get the correct current center position
+			var pCenterScr:Point = new Point( Verlocity.ScrW / 2, Verlocity.ScrH / 2 );
+			
+			// Get the localized version of the position
+			var pCenter:Point = objLayers[ aLayers[0] ].globalToLocal( pCenterScr );
+			ScaleLayer( aLayers[0], nScrollZ, pCenter.x, pCenter.y );
 
 			// Offset the rest
 			for ( var i:int = 1; i < aLayers.length; i++ )
@@ -257,7 +262,10 @@ package VerlocityEngine.components
 				
 				objLayers[ aLayers[i] ].x -= nScrollX / ( i + 1 );
 				objLayers[ aLayers[i] ].y -= nScrollY / ( i + 1 );
-				ScaleLayer( aLayers[i], nScrollZ / ( i + 1 ), Verlocity.ScrW / 2, Verlocity.ScrH / 2 );
+
+				// Get the localized version of the position
+				pCenter = objLayers[ aLayers[i] ].globalToLocal( pCenterScr );
+				ScaleLayer( aLayers[i], nScrollZ / ( i + 1 ), pCenter.x, pCenter.y );
 			}
 		}
 		

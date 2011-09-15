@@ -194,6 +194,7 @@ package VerlocityEngine.components
 					guiPauseMenu = new VerlocitySettings.PAUSEMENU_GUI();
 				}
 			}
+
 			if ( guiPauseMenu )
 			{
 				Verlocity.layers.layerUI.addChild( guiPauseMenu );
@@ -289,16 +290,19 @@ import VerlocityEngine.base.ui.verBUIScroll;
 import VerlocityEngine.Verlocity;
 import VerlocityEngine.VerlocitySettings;
 
-internal class verGUIPauseMenu extends Sprite
+
+/* Font Formats */
+internal const pauseFormat:TextFormat = new TextFormat( "_sans", 30, 0xFFFFFF );
+internal const pauseMenuFormat:TextFormat = new TextFormat( "_sans", 16, 0xFFFFFF, true );
+internal const pauseResumeFormat:TextFormat = new TextFormat( "_sans", 20, 0xFFFFFF, true );
+internal const pauseTagFormat:TextFormat = new TextFormat( "_sans", 12, 0xFFFFFF, true );
+
+/* Sizing */
+internal var menuWidth:int = 200;
+internal var menuHeight:int = 200;
+
+internal class verGUIPauseMenu extends verBUI
 {
-	private var menuWidth:int = 200;
-	private var menuHeight:int = 200;
-
-	private const pauseFormat:TextFormat = new TextFormat( "_sans", 30, 0xFFFFFF );
-	private const pauseMenuFormat:TextFormat = new TextFormat( "_sans", 16, 0xFFFFFF, true );
-	private const pauseResumeFormat:TextFormat = new TextFormat( "_sans", 20, 0xFFFFFF, true );
-	private const pauseTagFormat:TextFormat = new TextFormat( "_sans", 12, 0xFFFFFF, true );
-
 	public function verGUIPauseMenu( iPosX:int, iPosY:int ):void
 	{
 		// Pause Text
@@ -411,7 +415,7 @@ internal class verGUIPauseMenu extends Sprite
 		// MISC
 		var puiAchievements:verGUIPauseButton = new verGUIPauseButton( "ACHIEVEMENTS", pauseMenuFormat, 15, iSettingsY + 30,
 			function():void {
-				trace( "omg achievements" );
+				Verlocity.achievements.OpenGUI();
 			}, 170 );
 		addChild( puiAchievements );
 
@@ -422,7 +426,7 @@ internal class verGUIPauseMenu extends Sprite
 		addChild( puiFullscreen );
 	}
 	
-	public function Dispose():void
+	public override function Dispose():void
 	{
 		for ( var i:int = 0; i < numChildren; i++ )
 		{

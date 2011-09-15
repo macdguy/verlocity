@@ -75,8 +75,8 @@ package VerlocityEngine
 		 * STATE_TRANSITION_OUT defines the transition effect that occurs
 		 * when a state is being removed (fading out).
 		*/
-		public static var STATE_TRANSITION_IN:Class = TransIn;
-		public static var STATE_TRANSITION_OUT:Class = TransOut;
+		public static var STATE_TRANSITION_IN:Class;
+		public static var STATE_TRANSITION_OUT:Class;
 
 		
 		/*
@@ -90,7 +90,7 @@ package VerlocityEngine
 		 * GUI_SCALE sets the scale factor of all Verlocity GUI.
 		 * This is useful if you have smaller resolutions
 		*/
-		public static const GUI_SCALE:Number = 1;
+		public static const GUI_SCALE:Number = 1.0;
 		
 		/*
 		 * SHOW_MESSAGES enables/disables VerlocityMessages.

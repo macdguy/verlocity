@@ -50,6 +50,16 @@
 			return tfTextField.width;
 		}
 		
+		public function SetHeight( iHeight:int ):void
+		{
+			tfTextField.height = iHeight;
+		}
+		
+		public function GetHeight():int
+		{
+			return tfTextField.height;
+		}
+		
 		private function DrawDebugLines( iWidth:int = 0 ):void
 		{
 			if ( !VerlocitySettings.UI_DEBUG ) { return; }
