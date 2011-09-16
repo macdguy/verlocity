@@ -12,6 +12,7 @@
 */
 package VerlocityEngine.components 
 {
+	import flash.display.Shape;
 	import flash.events.Event;
 	import VerlocityEngine.Verlocity;
 	import VerlocityEngine.VerlocityLanguage;
@@ -41,6 +42,7 @@ package VerlocityEngine.components
 		private var objAcheivements:Object;
 		private var vGUIAchievements:Vector.<Array>;
 		private var guiAchiList:verGUIAchiList;
+		private var sAchiBG:Shape;
 
 		public const ACHI_DISPNAME:int = 0;
 		public const ACHI_DESC:int = 1;
@@ -294,26 +296,53 @@ package VerlocityEngine.components
 		{
 			if ( guiAchiList ) { CloseGUI(); }
 
+			// Fade out content with background
+			sAchiBG = new Shape();
+				sAchiBG.graphics.beginFill( 0x000000, .75 );
+					sAchiBG.graphics.drawRect( 0, 0, Verlocity.ScrW, Verlocity.ScrH );
+				sAchiBG.graphics.endFill();
+			Verlocity.layers.layerUI.addChild( sAchiBG );
+
+			// Add GUI
 			guiAchiList = new verGUIAchiList( Verlocity.ScrW / 2, Verlocity.ScrH / 2 );
 				guiAchiList.SetScale( VerlocitySettings.GUI_SCALE );
 			Verlocity.layers.layerUI.addChild( guiAchiList );
+			
+			// Disable pause menu, if available
+			if ( Verlocity.pause.PauseMenu )
+			{
+				Verlocity.pause.PauseMenu.ToggleButtons( false );
+			}
 		}
 		
 		public function CloseGUI():void
 		{
 			if ( !guiAchiList ) { return; }
 
-			Verlocity.layers.layerUI.removeChild( guiAchiList );
+			// Remove the BG
+			Verlocity.layers.layerUI.removeChild( sAchiBG );
+			sAchiBG = null;
 
+			// Remove GUI
+			Verlocity.layers.layerUI.removeChild( guiAchiList );
 			guiAchiList.Dispose();
 			guiAchiList = null;
+			
+			// Enable pause menu, if available
+			if ( Verlocity.pause.PauseMenu )
+			{
+				Verlocity.pause.PauseMenu.ToggleButtons( true );
+			}
 		}
+		
+		public function get IsGUIOpen():Boolean { return Boolean( guiAchiList ); }
 	}
 }
 
 
 import VerlocityEngine.base.ui.verBUI;
 import VerlocityEngine.base.ui.verBUIBar;
+import VerlocityEngine.base.ui.verBUIScroll;
 import VerlocityEngine.base.ui.verBUIText;
 import flash.text.TextFormat;
 
@@ -331,7 +360,7 @@ internal class verGUIAchievement extends verBUI
 	public function verGUIAchievement( sName:String, sDesc:String ):void
 	{
 		// BG
-		DrawRect( 0x33333, .5, achiWidth, achiHeight );
+		DrawRect( 0x333333, .5, achiWidth, achiHeight );
 		
 		// Inside
 		DrawRect( 0x222222, 1, achiWidth - 12, achiHeight - 12, true, 3, 0xE68C32, 1, false, NaN, 6, 6 );
@@ -394,16 +423,50 @@ internal class verGUIAchiList extends verBUI
 		// Achi List
 		//======================
 		var iPosYLast:int = ( achiText.y + achiText.height );
+		var iCount:int = 0;
+		
+		// Scroll UI (incase the achievements are bigger)
+		var iScrollHeight:int = 250 * VerlocitySettings.GUI_SCALE;
+		
+		var achiScroll:verBUIScroll = new verBUIScroll();
+			achiScroll.SetPos( 0, iPosYLast );
+			achiScroll.SetSize( menuWidth, iScrollHeight );
+		addChild( achiScroll );
 
+		// Display all achievements
 		for ( var sAchievement:String in Verlocity.achievements.GetAll() )
 		{
 			var achi:verGUIAchiProgress = new verGUIAchiProgress( Verlocity.achievements.Get( sAchievement ) );
-				achi.SetPos( 0, iPosYLast + 2 );
-			addChild( achi );
-			
-			iPosYLast = achi.y + achi.height;
+				achi.SetPos( 10, ( achiHeight + 4 ) * iCount );
+			achiScroll.Insert( achi );
+
+			iCount++;
 		}
-		
+
+		// Check if we have achievements
+		if ( iCount == 0 )
+		{
+			// No achievements
+			var achiTextErr:verBUIText = new verBUIText();
+				achiTextErr.SetPos( 0, iPosYLast + 2 );
+				achiTextErr.SetText( "No achievements.", achiMenuFormat );
+				achiTextErr.SetWidth( menuWidth );
+			addChild( achiTextErr );
+			
+			achiScroll.SetSize( menuWidth, achiTextErr.GetHeight() );
+		}
+		else
+		{
+			// Resize based on list amount if it's smaller
+			var iAchieveListHeight:int = ( achiHeight + 4 ) * iCount;
+			if ( iAchieveListHeight < iScrollHeight )
+			{ 
+				achiScroll.SetSize( menuWidth, iAchieveListHeight );
+			}
+		}
+
+		// Resize menu height based on this
+		iPosYLast = achiScroll.y + achiScroll.GetHeight();
 		menuHeight = iPosYLast + 50;
 
 		// Achi Menu BG
@@ -460,30 +523,31 @@ internal class verGUIAchiProgress extends verBUI
 			achiColor = 0xCCCCCC;
 			alpha = .5;
 		}
+		
+		var iWidth:int = menuWidth - 30;
 
 		// BG
-		DrawRect( 0x222222, 1, menuWidth, achiProgressHeight, true, 2, achiColor );
+		DrawRect( 0x222222, 1, iWidth, achiProgressHeight, true, 2, achiColor );
 		
 		// Name
 		var achName:verBUIText = new verBUIText();
 			achName.SetText( aAchievement[ Verlocity.achievements.ACHI_DISPNAME ], achiMenuFormat );
 			achName.SetPos( 0, 0 );
-			achName.SetWidth( menuWidth );
+			achName.SetWidth( iWidth );
 		addChild( achName );
 		
 		// Description
 		var achDesc:verBUIText = new verBUIText();
 			achDesc.SetText( aAchievement[ Verlocity.achievements.ACHI_DESC ], descFormat );
 			achDesc.SetPos( 0, 20 );
-			achDesc.SetWidth( menuWidth );
-			achDesc.SetHeight( menuWidth - 18 );
+			achDesc.SetWidth( iWidth );
 		addChild( achDesc );
 		
 		// Progress Bar
 		var nCurrentPercent:Number = aAchievement[ Verlocity.achievements.ACHI_DATA ] / aAchievement[ Verlocity.achievements.ACHI_MAX ];
 		var achProgress:verBUIBar = new verBUIBar();
-			achProgress.SetPos( 10, 50 );
-			achProgress.CreateBar( menuWidth - 20, 20, nCurrentPercent, 0xCCCCCC, 1, 0xFFFFFF, 1 );
+			achProgress.SetPos( 20, 50 );
+			achProgress.CreateBar( iWidth - 40, 20, nCurrentPercent, 0xCCCCCC, 1, 0xFFFFFF, 1 );
 		addChild( achProgress );
 
 		// Progress Text
@@ -493,8 +557,8 @@ internal class verGUIAchiProgress extends verBUI
 		var achTextProgress:verBUIText = new verBUIText();
 			achTextProgress.SetText( sProgress, achiMenuFormat );
 			if ( aAchievement[ Verlocity.achievements.ACHI_UNLOCKED ] ) { achTextProgress.SetTextColor( 0x00000 ); }
-			achTextProgress.SetPos( 10, 50 );
-			achTextProgress.SetWidth( menuWidth - 20 );
+			achTextProgress.SetPos( achProgress.x, achProgress.y );
+			achTextProgress.SetWidth( achProgress.width );
 		addChild( achTextProgress );
 	}
 

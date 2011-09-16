@@ -16,7 +16,7 @@
 			
 			// Fill Rect
 			sBar = new verBUI();
-				sBar.DrawRect( uiFillColor, nFillAlpha, iWidth - iLineThickness, iHeight - iLineThickness, false, NaN, NaN, NaN, false, NaN, iLineThickness, iLineThickness );
+				sBar.DrawRect( uiFillColor, nFillAlpha, iWidth - iLineThickness, iHeight - iLineThickness, false, NaN, NaN, NaN, false, NaN, iLineThickness + 1, iLineThickness + 1 );
 				sBar.width = iWidth * nStartPercent;
 			addChild( sBar );
 		}

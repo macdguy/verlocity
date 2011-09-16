@@ -167,6 +167,18 @@ package VerlocityEngine
 				break;
 			}
 		}
+		
+		public static function GetQuality():int
+		{
+			switch( sStage.quality )
+			{
+				case StageQuality.LOW: return 1; break;
+				case StageQuality.MEDIUM: return 2; break;
+				case StageQuality.HIGH: return 3; break;
+				case StageQuality.BEST: return 3; break;
+			}
+			return 3;
+		}
 
 		public static function SetFullscreen( bEnable:Boolean ):void
 		{

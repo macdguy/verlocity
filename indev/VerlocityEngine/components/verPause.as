@@ -269,9 +269,12 @@ package VerlocityEngine.components
 			vPauseMenu.length = 0;
 		}
 		
-		public function get PauseMenu():Vector.<Array> { return vPauseMenu; }
+		public function get PauseMenuList():Vector.<Array> { return vPauseMenu; }
+		public function get PauseMenuGUI():DisplayObject { return guiPauseMenu; }
 		public function get IsPausable():Boolean { return bPauseEnabled; }
 		public function get IsPaused():Boolean { return Verlocity.engine.IsPaused; }
+
+		internal function get PauseMenu():verGUIPauseMenu { return verGUIPauseMenu( guiPauseMenu ); }
 	}
 }
 
@@ -303,6 +306,10 @@ internal var menuHeight:int = 200;
 
 internal class verGUIPauseMenu extends verBUI
 {
+	private var puiLowQ:verGUIPauseButton;
+	private var puiMedQ:verGUIPauseButton;
+	private var puiHighQ:verGUIPauseButton;
+	
 	public function verGUIPauseMenu( iPosX:int, iPosY:int ):void
 	{
 		// Pause Text
@@ -319,13 +326,13 @@ internal class verGUIPauseMenu extends verBUI
 			} );
 		addChild( puiResume );
 		
-		var iLength:int = Verlocity.pause.PauseMenu.length;
+		var iLength:int = Verlocity.pause.PauseMenuList.length;
 		var iPosYLast:int = ( puiResume.y + puiResume.height );
 		if ( iLength > 0 )
 		{
 			for ( var i:int = 0; i < iLength; i++ )
 			{
-				var puiMenuItem:verGUIPauseMenuButton = new verGUIPauseMenuButton( Verlocity.pause.PauseMenu[i][0], pauseMenuFormat, 5, 75 + ( i * 25 ), Verlocity.pause.PauseMenu[i][1] );
+				var puiMenuItem:verGUIPauseMenuButton = new verGUIPauseMenuButton( Verlocity.pause.PauseMenuList[i][0], pauseMenuFormat, 5, 75 + ( i * 25 ), Verlocity.pause.PauseMenuList[i][1] );
 				addChild( puiMenuItem );
 				
 				if ( i + 1 == iLength ) { iPosYLast = puiMenuItem.y + puiMenuItem.height; }
@@ -367,23 +374,34 @@ internal class verGUIPauseMenu extends verBUI
 			qualityText.SetWidth( 70 );
 		addChild( qualityText );
 
-		var puiLowQ:verGUIPauseButton = new verGUIPauseButton( "L", pauseMenuFormat, 15, iSettingsY,
+		puiLowQ = new verGUIPauseButton( "L", pauseMenuFormat, 15, iSettingsY,
 			function():void {
 				Verlocity.SetQuality( 1 );
+				puiLowQ.Select();
+				puiMedQ.Unselect();
+				puiHighQ.Unselect();
 			} );
 		addChild( puiLowQ );
 
-		var puiMedQ:verGUIPauseButton = new verGUIPauseButton( "M", pauseMenuFormat, 40, iSettingsY,
+		puiMedQ = new verGUIPauseButton( "M", pauseMenuFormat, 40, iSettingsY,
 			function():void {
 				Verlocity.SetQuality( 2 );
+				puiLowQ.Unselect();
+				puiMedQ.Select();
+				puiHighQ.Unselect();
 			} );
 		addChild( puiMedQ );
 
-		var puiHighQ:verGUIPauseButton = new verGUIPauseButton( "H", pauseMenuFormat, 65, iSettingsY,
+		puiHighQ = new verGUIPauseButton( "H", pauseMenuFormat, 65, iSettingsY,
 			function():void {
 				Verlocity.SetQuality( 3 );
+				puiLowQ.Unselect();
+				puiMedQ.Unselect();
+				puiHighQ.Select();
 			} );
 		addChild( puiHighQ );
+		
+		UpdateQualityButtons();
 
 
 		// SOUND
@@ -437,6 +455,37 @@ internal class verGUIPauseMenu extends verBUI
 			i--;
 		}
 	}
+	
+	public function ToggleButtons( bEnabled:Boolean ):void
+	{
+		for ( var i:int = 0; i < numChildren; i++ )
+		{
+			var child:verBUI = verBUI( getChildAt( i ) );
+			
+			if ( child is verBUIButton )
+			{
+				if ( bEnabled )
+				{
+					verBUIButton( child ).Enable();
+					UpdateQualityButtons();
+				}
+				else
+				{
+					verBUIButton( child ).Disable();
+				}
+			}
+		}
+	}
+	
+	public function UpdateQualityButtons():void
+	{
+		switch ( Verlocity.GetQuality() )
+		{
+			case 1: puiLowQ.Select(); break;
+			case 2: puiMedQ.Select(); break;
+			case 3: puiHighQ.Select(); break;			
+		}
+	}
 }
 
 internal class verGUIPauseMenuButton extends verBUIButton
@@ -479,6 +528,12 @@ internal class verGUIPauseMenuButton extends verBUIButton
 		Clear();
 		DrawRect( 0xFFFFFF, 0, iWidth, tfTextField.height );
 		SetTextColor( 0xFFFFFF );
+	}
+	
+	protected override function Disabled():void
+	{
+		Clear();
+		SetTextColor( 0x444444 );
 	}	
 }
 
@@ -527,7 +582,23 @@ internal class verGUIPauseButton extends verBUIButton
 	protected override function Out():void
 	{
 		Clear();
+		SetTextColor( 0xFFFFFF );
 		DrawRect( 0xFFFFFF, 0, iWidth, 20, true, 2, 0xFFFFFF );
 		ResetPos();
-	}	
+	}
+	
+	protected override function Disabled():void
+	{
+		Clear();
+		SetTextColor( 0x444444 );
+		DrawRect( 0xCCCCCC, .2, iWidth, 20, true, 2, 0x444444 );
+		ResetPos();
+	}
+	
+	protected override function Selected():void
+	{
+		Clear();
+		DrawRect( 0xFF9900, 1, iWidth, 20, true, 2, 0xFFFFFF );
+		ResetPos();
+	}
 }
