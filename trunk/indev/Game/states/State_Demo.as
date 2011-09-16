@@ -19,6 +19,8 @@
 			var demo:Ent_Demo = Verlocity.ents.Create( Ent_Demo );
 				demo.SetPos( Verlocity.ScrW / 2, Verlocity.ScrH / 2 );
 			demo.Spawn( "Demo" );
+			
+			Verlocity.achievements.Unlock( "Demo1" );
 		}
 		
 		// Called when the state ends.

@@ -26,6 +26,7 @@
 
 			tfTextFormat.align = "center";		
 			tfTextField.setTextFormat( tfTextFormat );
+			if ( tfTextFormat.color ) { tfTextField.textColor = uint( tfTextFormat.color ); }
 			
 			tfTextField.width = tfTextField.textWidth + 5;
 			tfTextField.height = tfTextField.textHeight + 5;
@@ -35,7 +36,10 @@
 		
 		public function SetTextColor( uiColor:uint ):void
 		{
-			tfTextField.textColor = uiColor;
+			if ( tfTextField.textColor != uiColor )
+			{
+				tfTextField.textColor = uiColor;
+			}
 		}
 		
 		public function SetWidth( iWidth:int ):void

@@ -1,7 +1,7 @@
 ﻿package VerlocityEngine.base.ui
 {
 	import flash.display.DisplayObject;
-	import flash.display.Sprite;
+	import flash.display.Shape;
 	import flash.events.Event;
 	import flash.geom.Rectangle;
 
@@ -9,41 +9,88 @@
 
 	import flash.ui.Mouse;
 	import flash.ui.MouseCursor;
+	
+	import VerlocityEngine.Verlocity;
 
 	public class verBUIScroll extends verBUI
 	{
-		private var sprContent:Sprite;
-		private var sprViewArea:Sprite;
+		private var iWidth:int;
+		private var iHeight:int;
+		private var sViewArea:Shape;
 
-		private var sprScrollBar:Sprite;
-		private var sprScrollBarArea:Sprite;
+		private var uiContent:verBUI;
+		private var uiScrollBar:verBUI;
+		private var uiScrollBarArea:verBUI;
 		
 		private var rectScrollBounds:Rectangle;
 		
 		private var nCurrentRes:Number = 0;
 		private var nVelY:Number = 0;
-		private var nSpeed:Number = 0.45;
+		private var nSpeed:Number = 0.1;
 
 		public function verBUIScroll():void
 		{
-			addEventListener( MouseEvent.MOUSE_WHEEL, OnWheel );
-
-			sprContent = new Sprite();  addChild( sprContent );
-			sprViewArea = new Sprite();  addChild( sprViewArea );
-			sprContent.mask = sprViewArea;
-
-			sprScrollBarArea = new Sprite();  addChild( sprScrollBarArea );
-			sprScrollBarArea.addEventListener( MouseEvent.CLICK, OnClick );
-
-			sprScrollBar = new Sprite();  addChild( sprScrollBar );
-			sprScrollBar.addEventListener( MouseEvent.MOUSE_DOWN, OnDown );
-			sprScrollBar.addEventListener( MouseEvent.MOUSE_UP, OnUp );
-			sprScrollBar.addEventListener( MouseEvent.MOUSE_OVER, OnOver );
-			sprScrollBar.addEventListener( MouseEvent.MOUSE_OUT, OnOut );
+			uiContent = new verBUI();
+			addChild( uiContent );
 			
-			rectScrollBounds = new Rectangle();
+			sViewArea = new Shape();
+			addChild( sViewArea );
 
+			uiContent.mask = sViewArea;
+			
+			uiScrollBarArea = new verBUI();
+				uiScrollBarArea.addEventListener( MouseEvent.CLICK, OnClick );
+			addChild( uiScrollBarArea );
+			
+			uiScrollBar = new verBUI();
+				uiScrollBar.addEventListener( MouseEvent.MOUSE_DOWN, OnDown );
+				uiScrollBar.addEventListener( MouseEvent.MOUSE_UP, OnUp );
+				Verlocity.stage.addEventListener( MouseEvent.MOUSE_UP, OnUp );
+				uiScrollBar.addEventListener( MouseEvent.MOUSE_OVER, OnOver );
+				uiScrollBar.addEventListener( MouseEvent.MOUSE_OUT, OnOut );
+			addChild( uiScrollBar );
+
+			addEventListener( MouseEvent.MOUSE_WHEEL, OnWheel );
 			addEventListener( Event.ENTER_FRAME, Think );
+		}
+		
+		public override function Dispose():void
+		{
+			removeEventListener( MouseEvent.MOUSE_WHEEL, OnWheel );
+			removeEventListener( Event.ENTER_FRAME, Think );
+
+			uiScrollBarArea.removeEventListener( MouseEvent.CLICK, OnClick );
+			
+			uiScrollBar.removeEventListener( MouseEvent.MOUSE_DOWN, OnDown );
+			uiScrollBar.removeEventListener( MouseEvent.MOUSE_UP, OnUp );
+			Verlocity.stage.removeEventListener( MouseEvent.MOUSE_UP, OnUp );
+			uiScrollBar.removeEventListener( MouseEvent.MOUSE_OVER, OnOver );
+			uiScrollBar.removeEventListener( MouseEvent.MOUSE_OUT, OnOut );
+	
+			for ( var i:int = 0; i < uiContent.numChildren; i++ )
+			{
+				var child:DisplayObject = uiContent.getChildAt( i );
+				
+				if ( child is verBUI )
+				{
+					verBUI( child ).Dispose();
+				}
+
+				uiContent.removeChildAt( i );
+				i--;
+			}
+
+			removeChild( uiContent );
+			uiContent = null;
+
+			removeChild( sViewArea );
+			sViewArea = null;
+			
+			removeChild( uiScrollBar );
+			uiScrollBar = null;
+			
+			removeChild( uiScrollBarArea );
+			uiScrollBarArea = null;
 		}
 		
 		// override these to customize your scroll bar
@@ -53,46 +100,61 @@
 		protected function Out():void {} // called when the mouse moved out
 		protected function DrawBG():void
 		{
-			DrawRect( 0xFFFFFF, 1, width, height, false, 0, 0, 0, true, 10 );
+			DrawRect( 0x000000, 0, width, height );
 		}
 		protected function DrawScrollBar():void
 		{
 			var iScrollAreaWidth:int = 10;
-
-			// View area
-			sprViewArea.graphics.beginFill( 0xFFFFFF, 1 );
-				sprViewArea.graphics.drawRect( x + 2, y + 2, width - 4 - iScrollAreaWidth, height - 4 );
-			sprViewArea.graphics.endFill();
 			
 			// Scroll bar area
-			sprScrollBarArea.graphics.beginFill( 0xFFFFFF, .75 );
-				sprScrollBarArea.graphics.drawRect( width - 4 - iScrollAreaWidth, y + 2, iScrollAreaWidth, height - 4 );
-			sprScrollBarArea.graphics.endFill();
+			uiScrollBarArea.Clear();
+			uiScrollBarArea.DrawRect( 0x4444444, 1, iScrollAreaWidth, iHeight );
+			uiScrollBarArea.SetPos( iWidth - iScrollAreaWidth, 0 );
 			
 			// Scroll bar
-			var iScrollBarHeight:int = sprScrollBarArea.height * ( sprViewArea.height / sprContent.height );
-			
-			sprScrollBar.graphics.beginFill( 0xCCCCCC, 1 );
-				sprScrollBarArea.graphics.drawRect( width - 4 - iScrollAreaWidth, y + 2, iScrollAreaWidth, iScrollBarHeight );
-			sprScrollBarArea.graphics.endFill();
+			var iScrollBarHeight:int = iHeight * ( iHeight / uiContent.height );
+			uiScrollBar.Clear();
+			uiScrollBar.SetPos( uiScrollBarArea.x, uiScrollBarArea.y );
+			uiScrollBar.DrawRect( 0xFFFFFFF, 1, iScrollAreaWidth, iScrollBarHeight );
 		}
+		
+		private function UpdateScroll():void
+		{
+			DrawScrollBar();
+			rectScrollBounds = new Rectangle( uiScrollBarArea.x, uiScrollBarArea.y, 0, uiScrollBarArea.height - uiScrollBar.height );
 
+			// Should we draw the scroll bar?
+			if ( uiContent.height <= iHeight )
+			{
+				uiScrollBar.visible = uiScrollBarArea.visible = false;
+			}
+			else
+			{
+				uiScrollBar.visible = uiScrollBarArea.visible = true;
+			}
+
+			nCurrentRes = ( uiContent.height - sViewArea.height ) / ( uiScrollBarArea.height - uiScrollBar.height );
+		}
+		
 		private function Think( e:Event ):void
 		{
-			nVelY = sprContent.y + sprScrollBarArea.y * nCurrentRes - sprScrollBar.y * nCurrentRes;
-			sprContent.y += ( nVelY - sprContent.y ) * nSpeed;
+			nVelY = sViewArea.y + uiScrollBarArea.y * nCurrentRes - uiScrollBar.y * nCurrentRes;
+			uiContent.y += ( nVelY - uiContent.y ) * nSpeed;
+			
+			if ( uiScrollBar.y > rectScrollBounds.height ) { uiScrollBar.y = rectScrollBounds.height; }
+			if ( uiScrollBar.y < rectScrollBounds.y ) { uiScrollBar.y = rectScrollBounds.y; }
 		}
 		
 		private function OnUp( me:MouseEvent ):void
 		{
+			uiScrollBar.stopDrag();
 			Up();
-			sprScrollBar.stopDrag();
 		}
 
 		private function OnDown( me:MouseEvent ):void
 		{
+			uiScrollBar.startDrag( false, rectScrollBounds );
 			Down();
-			sprScrollBar.startDrag( false, rectScrollBounds );
 		}
 
 		private function OnOver( me:MouseEvent ):void
@@ -109,54 +171,49 @@
 
 		private function OnWheel( me:MouseEvent ):void
 		{
-			if ( me.delta > 1 )
+			if ( me.delta < 1 )
 			{
-				// up
+				if ( uiScrollBar.y < rectScrollBounds.height )
+				{
+					uiScrollBar.y -= me.delta * 4;
+				}
 			}
 			else
-			{
-				// down
+			{		
+				if ( uiScrollBar.y > rectScrollBounds.y )
+				{
+					uiScrollBar.y -= me.delta * 4;
+				}
 			}
 		}
 		
 		private function OnClick( me:MouseEvent ):void
 		{
-			
-		}
-		
-		private function UpdateScroll():void
-		{
-			DrawScrollBar();
-			rectScrollBounds = new Rectangle( sprScrollBarArea.x, sprScrollBarArea.y, sprScrollBarArea.width, sprScrollBarArea.height );
-
-			// Should we draw the scroll bar?
-			if ( sprContent.height <= sprViewArea.height )
-			{
-				sprScrollBar.visible = sprScrollBarArea.visible = false;
-			}
-			else
-			{
-				sprScrollBar.visible = sprScrollBarArea.visible = true;
-			}
-
-			nCurrentRes = ( sprContent.height - sprViewArea.height ) / ( sprScrollBarArea.height - sprScrollBar.height ) * 1.01;
+			uiScrollBar.y = me.localY - ( uiScrollBar.height / 2 );
 		}
 
-		public function SetSize( iWidth:int, iHeight:int ):void
+		public function SetSize( iSetWidth:int, iSetHeight:int ):void
 		{
-			width = iWidth; height = iHeight;
+			iWidth = iSetWidth;
+			iHeight = iSetHeight;
 
-			graphics.beginFill( 0, 0 );
-				graphics.drawRect( 0, 0, iWidth, iHeight );
-			graphics.endFill();
-			
-			graphics.beginFill( 0x000000, 0 );
-				graphics.lineStyle( 1, 0xFFFF00 );
-				graphics.drawRect( 0, 0, iWidth, iHeight );
-			graphics.endFill();
+			sViewArea.graphics.clear();
+			sViewArea.graphics.beginFill( 0 );
+				sViewArea.graphics.drawRect( 0, 0, iWidth, iHeight );
+			sViewArea.graphics.endFill();
 
 			UpdateScroll();
 			DrawBG();
+		}
+		
+		public function GetHeight():int
+		{
+			return iHeight;
+		}
+		
+		public function GetWidth():int
+		{
+			return iWidth;
 		}
 		
 		public function SetSpeed( nSetSpeed:Number ):void
@@ -166,7 +223,8 @@
 
 		public function Insert( dispObj:DisplayObject ):void
 		{
-			sprContent.addChild( dispObj );
+			uiContent.addChild( dispObj );
+			UpdateScroll();
 		}
 
 	}
