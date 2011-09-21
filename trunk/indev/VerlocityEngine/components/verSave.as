@@ -15,6 +15,7 @@
 package VerlocityEngine.components
 {
 	import VerlocityEngine.VerlocityLanguage;
+	import flash.net.SharedObject;
 
 	public final class verSave extends Object
 	{
@@ -26,7 +27,6 @@ package VerlocityEngine.components
 		public function verSave():void
 		{
 			if ( wasCreated ) { throw new Error( VerlocityLanguage.T( "ComponentLoadFail" ) ); return; } wasCreated = true;
-			Construct();
 		}
 		/************************************************/
 		/************************************************/
@@ -34,12 +34,27 @@ package VerlocityEngine.components
 		/*
 		 ****************COMPONENT VARS******************
 		*/
+		private var so:SharedObject;
 		
-		/*
-		 **************COMPONENT CREATION****************
-		*/
-		private function Construct():void
+		public function Save( data:Object, sPackageName:String ):void
 		{
+			so = SharedObject.getLocal( sPackageName );
+				so.data.savedData = data;
+			so.flush();
+			so.close();
+		}
+		
+		public function Load( sPackageName:String ):Object
+		{
+			so = SharedObject.getLocal( sPackageName );
+			return so.data.savedData;
+		}
+		
+		public function Delete( sPackageName:String ):void
+		{
+			so = SharedObject.getLocal( sPackageName );
+			so.clear();
+			so = null;
 		}
 
 	}

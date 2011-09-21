@@ -172,20 +172,29 @@ package VerlocityEngine
 		{
 			switch( sStage.quality )
 			{
-				case StageQuality.LOW: return 1; break;
-				case StageQuality.MEDIUM: return 2; break;
-				case StageQuality.HIGH: return 3; break;
-				case StageQuality.BEST: return 3; break;
+				case "LOW": return 1; break;
+				case "MEDIUM": return 2; break;
+				case "HIGH": return 3; break;
+				case "BEST": return 3; break;
 			}
 			return 3;
 		}
 
+		private static var bFullscreenAllowed:Boolean = true;
 		public static function SetFullscreen( bEnable:Boolean ):void
 		{
 			if ( bEnable )
 			{
-				sStage.displayState = StageDisplayState.FULL_SCREEN;
-				VerlocityMessages.Create( VerlocityLanguage.T( "VerlocityFullscreenOn" ) );
+				try
+				{
+					sStage.displayState = StageDisplayState.FULL_SCREEN;
+					VerlocityMessages.Create( VerlocityLanguage.T( "VerlocityFullscreenOn" ) );
+				}
+				catch ( e:SecurityError )
+				{
+					bFullscreenAllowed = false;					
+					VerlocityMessages.Create( VerlocityLanguage.T( "VerlocityFullscreenDisabled" ) );					
+				}
 			}
 			else
 			{
@@ -194,6 +203,7 @@ package VerlocityEngine
 			}
 		}
 		public static function get IsFullscreen():Boolean { return sStage.displayState == StageDisplayState.FULL_SCREEN; }
+		public static function get CanFullscreen():Boolean { return bFullscreenAllowed; }
 		
 		public static function CleanSlate( bRemoveProtected:Boolean = false, bFadeOutSound:Boolean = false ):void
 		{

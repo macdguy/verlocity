@@ -292,6 +292,7 @@ import VerlocityEngine.base.ui.verBUIScroll;
 
 import VerlocityEngine.Verlocity;
 import VerlocityEngine.VerlocitySettings;
+import VerlocityEngine.VerlocityLanguage;
 
 
 /* Font Formats */
@@ -314,13 +315,13 @@ internal class verGUIPauseMenu extends verBUI
 	{
 		// Pause Text
 		var pauseText:verBUIText = new verBUIText();
-			pauseText.SetText( "PAUSED", pauseFormat );
+			pauseText.SetText( VerlocityLanguage.T( "verPauseTitle" ), pauseFormat );
 			pauseText.SetWidth( menuWidth );
 		addChild( pauseText );	
 
 		// Pause Menu
 		//======================
-		var puiResume:verGUIPauseMenuButton = new verGUIPauseMenuButton( "RESUME", pauseResumeFormat, 5, 40,
+		var puiResume:verGUIPauseMenuButton = new verGUIPauseMenuButton( VerlocityLanguage.T( "verPauseResume" ), pauseResumeFormat, 5, 40,
 			function():void {
 				Verlocity.pause.Resume();
 			} );
@@ -369,35 +370,35 @@ internal class verGUIPauseMenu extends verBUI
 
 		// QUALITY
 		var qualityText:verBUIText = new verBUIText();
-			qualityText.SetText( "QUALITY", pauseTagFormat );
+			qualityText.SetText( VerlocityLanguage.T( "verPauseQuality" ), pauseTagFormat );
 			qualityText.SetPos( 15, iPosYLast + 12 );
 			qualityText.SetWidth( 70 );
 		addChild( qualityText );
 
-		puiLowQ = new verGUIPauseButton( "L", pauseMenuFormat, 15, iSettingsY,
+		puiLowQ = new verGUIPauseButton( VerlocityLanguage.T( "verPauseQualityLow" ), pauseMenuFormat, 15, iSettingsY,
 			function():void {
 				Verlocity.SetQuality( 1 );
-				puiLowQ.Select();
-				puiMedQ.Unselect();
-				puiHighQ.Unselect();
+				puiLowQ.Toggle();
+				puiMedQ.Untoggle();
+				puiHighQ.Untoggle();
 			} );
 		addChild( puiLowQ );
 
-		puiMedQ = new verGUIPauseButton( "M", pauseMenuFormat, 40, iSettingsY,
+		puiMedQ = new verGUIPauseButton( VerlocityLanguage.T( "verPauseQualityMedium" ), pauseMenuFormat, 40, iSettingsY,
 			function():void {
 				Verlocity.SetQuality( 2 );
-				puiLowQ.Unselect();
-				puiMedQ.Select();
-				puiHighQ.Unselect();
+				puiLowQ.Untoggle();
+				puiMedQ.Toggle();
+				puiHighQ.Untoggle();
 			} );
 		addChild( puiMedQ );
 
-		puiHighQ = new verGUIPauseButton( "H", pauseMenuFormat, 65, iSettingsY,
+		puiHighQ = new verGUIPauseButton( VerlocityLanguage.T( "verPauseQualityHigh" ), pauseMenuFormat, 65, iSettingsY,
 			function():void {
 				Verlocity.SetQuality( 3 );
-				puiLowQ.Unselect();
-				puiMedQ.Unselect();
-				puiHighQ.Select();
+				puiLowQ.Untoggle();
+				puiMedQ.Untoggle();
+				puiHighQ.Toggle();
 			} );
 		addChild( puiHighQ );
 		
@@ -406,7 +407,7 @@ internal class verGUIPauseMenu extends verBUI
 
 		// SOUND
 		var soundText:verBUIText = new verBUIText();
-			soundText.SetText( "VOLUME", pauseTagFormat );
+			soundText.SetText( VerlocityLanguage.T( "verPauseVolume" ), pauseTagFormat );
 			soundText.SetPos( 115, iPosYLast + 12 );
 			soundText.SetWidth( 70 );
 		addChild( soundText );
@@ -431,17 +432,22 @@ internal class verGUIPauseMenu extends verBUI
 
 
 		// MISC
-		var puiAchievements:verGUIPauseButton = new verGUIPauseButton( "ACHIEVEMENTS", pauseMenuFormat, 15, iSettingsY + 30,
+		var puiAchievements:verGUIPauseButton = new verGUIPauseButton( VerlocityLanguage.T( "verPauseAchievements" ), pauseMenuFormat, 15, iSettingsY + 30,
 			function():void {
 				Verlocity.achievements.OpenGUI();
 			}, 170 );
 		addChild( puiAchievements );
 
-		var puiFullscreen:verGUIPauseButton = new verGUIPauseButton( "FULLSCREEN", pauseMenuFormat, 15, iSettingsY + 55,
+		var puiFullscreen:verGUIPauseButton = new verGUIPauseButton( VerlocityLanguage.T( "verPauseFullscreen" ), pauseMenuFormat, 15, iSettingsY + 55,
 			function():void {
 				Verlocity.SetFullscreen( !Verlocity.IsFullscreen );
 			}, 170 );
 		addChild( puiFullscreen );
+
+		if ( !Verlocity.CanFullscreen )
+		{
+			puiFullscreen.Disable();
+		}
 	}
 	
 	public override function Dispose():void
@@ -481,9 +487,9 @@ internal class verGUIPauseMenu extends verBUI
 	{
 		switch ( Verlocity.GetQuality() )
 		{
-			case 1: puiLowQ.Select(); break;
-			case 2: puiMedQ.Select(); break;
-			case 3: puiHighQ.Select(); break;			
+			case 1: puiLowQ.Toggle(); break;
+			case 2: puiMedQ.Toggle(); break;
+			case 3: puiHighQ.Toggle(); break;			
 		}
 	}
 }

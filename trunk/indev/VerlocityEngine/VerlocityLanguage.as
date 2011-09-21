@@ -22,12 +22,17 @@ package VerlocityEngine
 		// TODO: Expand upon this later.
 		public static function Set( lang:Object ):void
 		{
-			currentLang = new lang();
+			currentLang = lang;
 		}
 
 		public static function T( sTrans:String ):String
 		{
-			return currentLang.langData[sTrans];
+			if ( currentLang[sTrans] )
+			{
+				return currentLang[sTrans];
+			}
+
+			return "Invalid language string ID!";
 		}
 	}
 }

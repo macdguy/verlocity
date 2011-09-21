@@ -46,7 +46,8 @@ package VerlocityEngine.components
 		 ****************COMPONENT VARS******************
 		*/
 		private var objUI:Object;
-		private var uiCurrentButton:verBUIButton;
+		private var currentButtons:Vector.<verBUIButton>;
+		private var iCurrentButton:int;
 
 
 		/*
@@ -55,6 +56,7 @@ package VerlocityEngine.components
 		private function Construct():void
 		{
 			objUI = new Object();
+			iCurrentButton = -1;
 			
 			if ( VerlocitySettings.RIGHTCLICK_PROMOTE )
 			{
@@ -109,7 +111,7 @@ package VerlocityEngine.components
 
 
 		/*------------------ PUBLIC -------------------*/
-		public function CreateButton( sName:String, sText:String, tfTextFormat:TextFormat, iPosX:int = 0, iPosY:int = 0, cButton:Class = null, fFunction:Function = null, bStarting:Boolean = false ):verBUIButton
+		public function CreateButton( sName:String, sText:String, tfTextFormat:TextFormat, iPosX:int = 0, iPosY:int = 0, cButton:Class = null, fFunction:Function = null ):verBUIButton
 		{
 			if ( objUI[sName] != null )
 			{
@@ -126,7 +128,11 @@ package VerlocityEngine.components
 				ui.SetOriginPos( iPosX, iPosY );
 			Verlocity.layers.layerUI.addChild( ui );
 			
-			if ( bStarting ) { uiCurrentButton = ui; }
+			if ( !currentButtons )
+			{
+				currentButtons = new Vector.<verBUIButton>();
+			}
+			currentButtons.push( ui );
 
 			Store( sName, verBUI( ui ) );
 			
@@ -167,6 +173,22 @@ package VerlocityEngine.components
 			{
 				objUI[sName].parent.removeChild( objUI[sName] );
 			}
+			
+			// Remove buttons
+			if ( currentButtons.length > 0 )
+			{
+				var i:int = currentButtons.length - 1;
+				while ( i > 0 )
+				{
+					if ( currentButtons[i] == objUI[sName] )
+					{
+						delete currentButtons[i];
+						currentButtons[i] = null;
+						currentButtons.slice( i, 1 );
+					}
+					i--;
+				}
+			}
 
 			delete objUI[sName];
 			objUI[sName] = null;
@@ -190,36 +212,84 @@ package VerlocityEngine.components
 			}
 
 			objUI = new Object();
-			uiCurrentButton = null;
+			
+			if ( currentButtons )
+			{
+				currentButtons.length = 0;
+				currentButtons = null;
+			}
+
+			iCurrentButton = -1;
 			
 			Verlocity.Trace( "UI", VerlocityLanguage.T( "GenericRemoveAll" ) );
 		}
 		
-		// The following functions do not work as intended.
-		// This is a known bug and is being worked on.
 		public function NextUIButton():void
 		{
-			if ( uiCurrentButton )
+			if ( !currentButtons || currentButtons.length == 0 ) { return; }
+
+			// Unselect previous button
+			if ( iCurrentButton >= 0 && currentButtons[iCurrentButton] )
 			{
-				uiCurrentButton.GoToNextButton();
-				uiCurrentButton = uiCurrentButton.NextButton;
+				currentButtons[iCurrentButton].Unselect();
+			}
+			
+			// Set current button forward
+			if ( iCurrentButton < 0 )
+			{
+				iCurrentButton = 0;
+			}
+			else
+			{
+				iCurrentButton++;
+			}
+			
+			// Loop if needed
+			if ( iCurrentButton > ( currentButtons.length - 1 ) )
+			{
+				iCurrentButton = 0;
+			}
+
+			// Select new button
+			if ( currentButtons[iCurrentButton] )
+			{
+				currentButtons[iCurrentButton].Select();
 			}
 		}
 
 		public function PreviousUIButton():void
 		{
-			if ( uiCurrentButton )
+			if ( !currentButtons || currentButtons.length == 0 ) { return; }
+
+			// Unselect previous button
+			if ( iCurrentButton >= 0 && currentButtons[iCurrentButton] )
 			{
-				uiCurrentButton.GoToNextButton();
-				uiCurrentButton = uiCurrentButton.PreviousButton;
-			}			
+				currentButtons[iCurrentButton].Unselect();
+			}
+
+			// Set current button backwards
+			iCurrentButton--;
+			
+			// Loop backwards if needed
+			if ( iCurrentButton < 0 )
+			{
+				iCurrentButton = currentButtons.length - 1;
+			}
+
+			// Select new button
+			if ( currentButtons[iCurrentButton] )
+			{
+				currentButtons[iCurrentButton].Select();
+			}
 		}
 		
 		public function EnterUIButton():void
 		{
-			if ( uiCurrentButton )
+			if ( iCurrentButton < 0 || !currentButtons ) { return; }
+
+			if ( currentButtons[iCurrentButton] )
 			{
-				uiCurrentButton.DoButton();
+				currentButtons[iCurrentButton].DoButton();
 			}
 		}
 

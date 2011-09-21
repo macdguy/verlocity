@@ -18,12 +18,9 @@
 	{
 		protected var fFunction:Function;
 		protected var iState:int;
-		protected var bMouseOver:Boolean;
-		
-		protected var bIsDisabled:Boolean;
 
-		protected var uiNextButton:verBUIButton;
-		protected var uiPreviousButton:verBUIButton;
+		protected var bMouseOver:Boolean;
+		protected var bIsDisabled:Boolean;
 
 		protected var sBackground:Shape;
 		protected var ctBGColor:ColorTransform = new ColorTransform();
@@ -164,7 +161,7 @@
 			Out();
 		}
 
-		public function Select():void
+		public function Toggle():void
 		{
 			if ( bIsDisabled || iState == STATE_SELECTED ) { return; }
 
@@ -176,11 +173,27 @@
 			Selected();
 		}
 
-		public function Unselect():void
+		public function Untoggle():void
 		{
 			if ( !bIsDisabled || iState != STATE_SELECTED ) { return; }
 			
 			bIsDisabled = false;
+
+			iState = STATE_OUT;
+			Out();
+		}
+		
+		public function Select():void
+		{
+			if ( bIsDisabled ) { return; }
+
+			iState = STATE_OVER;
+			Over();
+		}
+		
+		public function Unselect():void
+		{
+			if ( bIsDisabled ) { return; }
 
 			iState = STATE_OUT;
 			Out();
@@ -200,32 +213,11 @@
 			ctBGColor = null;
 			sBackground = null;
 			fFunction = null;
-			
-			uiNextButton = null;
-			uiPreviousButton = null;
 
 			removeEventListener( MouseEvent.MOUSE_UP, OnUp );
 			removeEventListener( MouseEvent.MOUSE_DOWN, OnDown );
 			removeEventListener( MouseEvent.MOUSE_OVER, OnOver );
 			removeEventListener( MouseEvent.MOUSE_OUT, OnOut );
 		}
-		
-
-		public function GoToNextButton():void
-		{
-			Out();
-			if ( uiNextButton ) { uiNextButton.Over(); }
-		}
-
-		public function GoToPreviousButton():void
-		{
-			Out();
-			if ( uiPreviousButton ) { uiPreviousButton.Over(); }
-		}
-		
-		public function get NextButton():verBUIButton { return uiNextButton; }
-		public function set NextButton( uiNext:verBUIButton ):void { uiNextButton = uiNext; }
-		public function get PreviousButton():verBUIButton { return uiPreviousButton; }
-		public function set PreviousButton( uiPrevious:verBUIButton ):void { uiPreviousButton = uiPrevious; }
 	}
 }
