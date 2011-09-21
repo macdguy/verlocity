@@ -1,43 +1,62 @@
 package VerlocityEngine.languages 
 {
-	public class verLangEnglish extends Object
+	public dynamic class verLangEnglish extends Object
 	{
-		public var langData:Object = new Object();
-
 		public function verLangEnglish():void
 		{
-			langData["VerlocityLoadFail"] = "Verlocity engine can only be created once!";
+			this["VerlocityLoadFail"] = "Verlocity engine can only be created once!";
 
 			// Components
-			langData["ComponentSuccess"] = " component registered and loaded.";
-			langData["ComponentDuplicate"] = "Attempted to register component twice!";
-			langData["ComponentLoadFail"] = "A component and cannot be created twice!";
+			this["ComponentSuccess"] = " component registered and loaded.";
+			this["ComponentDuplicate"] = "Attempted to register component twice!";
+			this["ComponentLoadFail"] = "A component and cannot be created twice!";
+
 
 			// Generic
-			langData["GenericAddSuccess"] = " successfully added.";
-			langData["GenericAddFail"] = "Unable to add. ";
-			langData["GenericDuplicate"] = "Found duplicate, skipping.";
+			this["GenericAddSuccess"] = " successfully added.";
+			this["GenericAddFail"] = "Unable to add. ";
+			this["GenericDuplicate"] = "Found duplicate, skipping.";
 
-			langData["GenericMissing"] = " does not exist.";
-			langData["GenericRemove"] = "Removing ";
-			langData["GenericRemoveAll"] = "Removed all.";
+			this["GenericMissing"] = " does not exist.";
+			this["GenericRemove"] = "Removing ";
+			this["GenericRemoveAll"] = "Removed all.";
+			
+
+			// Pause menu
+			this["verPauseTitle"] = "PAUSE";
+			this["verPauseResume"] = "RESUME";
+			this["verPauseQuality"] = "QUALITY";
+				this["verPauseQualityLow"] = "L";
+				this["verPauseQualityMedium"] = "M";
+				this["verPauseQualityHigh"] = "H";
+			this["verPauseVolume"] = "VOLUME";
+			this["verPauseAchievements"] = "ACHIEVEMENTS";
+			this["verPauseFullscreen"] = "FULLSCREEN";
+			
+
+			// Achievement menu
+			this["verAchievementsTitle"] = "ACHIEVEMENTS";
+			this["verAchievementsNone"] = "No achievements.";
+			this["verAchievementsExit"] = "CLOSE";
+
 			
 			// Messages
-			langData["VerlocityPause"] = "Game paused";
-			langData["VerlocityUnpause"] = "Game resumed";
+			this["VerlocityPause"] = "Game paused";
+			this["VerlocityUnpause"] = "Game resumed";
 
-			langData["VerlocityVolumeMute"] = "Volume muted ";
-			langData["VerlocityVolumeUnmute"] = "Volume unmuted";
-			langData["VerlocityVolumeDown"] = "Volume lowered ";
-			langData["VerlocityVolumeUp"] = "Volume raised ";
+			this["VerlocityVolumeMute"] = "Volume muted ";
+			this["VerlocityVolumeUnmute"] = "Volume unmuted";
+			this["VerlocityVolumeDown"] = "Volume lowered ";
+			this["VerlocityVolumeUp"] = "Volume raised ";
 
-			langData["VerlocityFullscreenOn"] = "Fullscreen enabled";
-			langData["VerlocityFullscreenOff"] = "Fullscreen disabled";
+			this["VerlocityFullscreenOn"] = "Fullscreen enabled";
+			this["VerlocityFullscreenOff"] = "Fullscreen disabled";
+			this["VerlocityFullscreenDisabled"] = "Fullscreen is not allowed";
 
-			langData["VerlocityQuality"] = "Quality set to ";
-				langData["VerlocityQualityH"] = "HIGH";
-				langData["VerlocityQualityM"] = "MEDIUM";
-				langData["VerlocityQualityL"] = "LOW";
+			this["VerlocityQuality"] = "Quality set to ";
+				this["VerlocityQualityH"] = "HIGH";
+				this["VerlocityQualityM"] = "MEDIUM";
+				this["VerlocityQualityL"] = "LOW";
 		}
 	}
 }

@@ -400,6 +400,7 @@ import VerlocityEngine.base.ui.verBUIButton;
 
 import VerlocityEngine.Verlocity;
 import VerlocityEngine.VerlocitySettings;
+import VerlocityEngine.VerlocityLanguage;
 
 
 /* Font Formats */
@@ -416,7 +417,7 @@ internal class verGUIAchiList extends verBUI
 	{
 		// Achi Text
 		var achiText:verBUIText = new verBUIText();
-			achiText.SetText( "ACHIEVEMENTS", achiFormat );
+			achiText.SetText( VerlocityLanguage.T( "verAchievementsTitle" ), achiFormat );
 			achiText.SetWidth( menuWidth );
 		addChild( achiText );	
 
@@ -449,7 +450,7 @@ internal class verGUIAchiList extends verBUI
 			// No achievements
 			var achiTextErr:verBUIText = new verBUIText();
 				achiTextErr.SetPos( 0, iPosYLast + 2 );
-				achiTextErr.SetText( "No achievements.", achiMenuFormat );
+				achiTextErr.SetText( VerlocityLanguage.T( "verAchievementsNone" ), achiMenuFormat );
 				achiTextErr.SetWidth( menuWidth );
 			addChild( achiTextErr );
 			
@@ -488,7 +489,7 @@ internal class verGUIAchiList extends verBUI
 		x = iPosX - ( menuWidth / 2 ) * VerlocitySettings.GUI_SCALE;
 		y = iPosY - ( menuHeight / 2 ) * VerlocitySettings.GUI_SCALE;
 
-		var achiClose:verGUIAchiButton = new verGUIAchiButton( "CLOSE", achiMenuFormat, ( menuWidth / 2 ) - ( 170 / 2 ), menuHeight - 35,
+		var achiClose:verGUIAchiButton = new verGUIAchiButton( VerlocityLanguage.T( "verAchievementsExit" ), achiMenuFormat, ( menuWidth / 2 ) - ( 170 / 2 ), menuHeight - 35,
 			function():void {
 				Verlocity.achievements.CloseGUI();
 			}, 170 );

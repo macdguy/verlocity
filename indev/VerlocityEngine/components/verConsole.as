@@ -24,6 +24,7 @@ package VerlocityEngine.components
 	
 	import VerlocityEngine.Verlocity;
 	import VerlocityEngine.VerlocityLanguage;
+	import VerlocityEngine.VerlocityMessages;
 	import VerlocityEngine.VerlocityUtil;
 	import VerlocityEngine.util.stringHelper;
 
@@ -70,6 +71,9 @@ package VerlocityEngine.components
 		private function Construct():void
 		{
 			objCommands = new Object();
+			
+			// Message about debug mode
+			VerlocityMessages.Create( "DEBUG MODE ENABLED" );
 			
 			// Console graphic
 			sprConsole = new Sprite();
