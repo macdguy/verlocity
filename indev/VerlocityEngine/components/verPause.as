@@ -94,7 +94,8 @@ package VerlocityEngine.components
 		/*------------------ PRIVATE ------------------*/
 		private function PauseKeyHandle( ke:KeyboardEvent ):void
 		{
-			if ( !bPauseEnabled || Verlocity.state.IsTransitioning || ( Verlocity.console && Verlocity.console.IsEnabled ) || iPauseDelay > getTimer() ) { return; }
+			if ( !IsPausable || iPauseDelay > getTimer() ||
+				 Verlocity.state.IsTransitioning || ( Verlocity.console && Verlocity.console.IsEnabled ) ) { return; }
 
 			iPauseDelay = getTimer() + 1000;
 
@@ -106,14 +107,15 @@ package VerlocityEngine.components
 		
 		private function PauseLostFocusHandle( e:Event ):void
 		{
-			if ( !VerlocitySettings.PAUSE_ONFOCUSLOST || Verlocity.state.IsTransitioning || !bPauseEnabled || ( Verlocity.console && Verlocity.console.IsEnabled ) ) { return; }
+			if ( !VerlocitySettings.PAUSE_ONFOCUSLOST || IsPaused || !IsPausable || 
+				 Verlocity.state.IsTransitioning || ( Verlocity.console && Verlocity.console.IsEnabled ) ) { return; }
 
 			Pause();
 		}
 		
 		private function PauseToggle():void
 		{
-			if ( Verlocity.engine.IsPaused )
+			if ( IsPaused )
 			{
 				Resume();
 			}
@@ -162,7 +164,7 @@ package VerlocityEngine.components
 		/*------------------ PUBLIC -------------------*/
 		public function Pause():void
 		{
-			if ( Verlocity.engine.IsPaused ) { return; }
+			if ( IsPaused ) { return; }
 
 			Verlocity.engine.Pause();
 			Verlocity.sound.PauseAll();
@@ -181,6 +183,8 @@ package VerlocityEngine.components
 			Verlocity.layers.layerUI.addChild( sPauseBG );
 			
 			// Add the pause menu
+			if ( guiPauseMenu ) { return; } // already have a pause menu, don't add another
+
 			if ( VerlocitySettings.SHOW_PAUSEMENU )
 			{
 				guiPauseMenu = new verGUIPauseMenu( Verlocity.ScrW / 2, Verlocity.ScrH / 2 );
@@ -206,7 +210,7 @@ package VerlocityEngine.components
 
 		public function Resume():void
 		{
-			if ( !Verlocity.engine.IsPaused ) { return; }
+			if ( !IsPaused ) { return; }
 
 			Verlocity.engine.Resume();
 			Verlocity.sound.ResumeAll();

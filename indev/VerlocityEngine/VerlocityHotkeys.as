@@ -33,8 +33,8 @@ package VerlocityEngine
 		objKeys["VerlocityPause"] = 80; //Keyboard.P
 		objKeys["VerlocityFullscreen"] = 70; //Keyboard.F
 
-		objKeys["VerlocityNextUI"] = Keyboard.UP;
-		objKeys["VerlocityPreviousUI"] = Keyboard.DOWN;
+		objKeys["VerlocityNextUI"] = Keyboard.DOWN;
+		objKeys["VerlocityPreviousUI"] = Keyboard.UP;
 		objKeys["VerlocityEnterUI"] = Keyboard.ENTER;
 
 		objKeys["Left"] = Keyboard.LEFT;
