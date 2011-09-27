@@ -2,6 +2,7 @@
 {
 	import flash.display.DisplayObject;
 	import flash.display.Sprite;
+	import flash.geom.Rectangle;
 	
 	import VerlocityEngine.Verlocity;
 	import VerlocityEngine.util.mathHelper;
@@ -9,7 +10,7 @@
 	public class verBExtendedEnt extends verBEnt
 	{
 		protected var entHealth:int;
-		protected var entCollision:Sprite = new Sprite();
+		protected var entCollision:verBSprCollisionBox;
 
 		protected var spawnHealth:int;
 
@@ -19,7 +20,8 @@
 		{
 			super();
 
-			SetCollisionBox( x - width, y - height, width, height );
+			var rectBounds:Rectangle = getBounds( this );
+			SetCollisionBox( rectBounds.x, rectBounds.y, rectBounds.width, rectBounds.height );
 		}
 
 		public override function InternalThink():void
@@ -127,6 +129,11 @@
 
 		public function SetCollisionBox( colX:int = 0, colY:int = 0, colWidth:int = 10, colHeight:int = 10 ):void
 		{
+			if ( !entCollision )
+			{
+				entCollision = new verBSprCollisionBox();
+			}
+
 			entCollision.graphics.clear();
 
 			entCollision.graphics.beginFill( 0x00, 0 );
@@ -161,6 +168,16 @@
 				refCurrentEnt = null;
 				i--;
 			}
+		}
+		
+		public function get collision():DisplayObject
+		{
+			if ( entCollision )
+			{
+				return entCollision;
+			}
+
+			return this;
 		}
 		
 		public function IsTouching( ent:DisplayObject, bUseCollisionBox:Boolean = false ):Boolean

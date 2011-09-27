@@ -54,6 +54,7 @@ package VerlocityEngine.components
 		private var sprCamera:Sprite;
 		private var sCameraViewArea:Shape;
 		private var pCenter:Point;
+		private var nZoom:Number;
 		
 		private var ctColor:ColorTransform;
 		private var cTint:Color;
@@ -61,7 +62,11 @@ package VerlocityEngine.components
 		private var cmFilter:ColorMatrixFilter;
 
 		private var pGoto:Point;
+
 		private var entFollow:verBEnt;
+		private var entOffsetX:int;
+		private var entOffsetY:int;
+
 		private var bEasing:Boolean;
 		private var iEasingSpeed:int;
 		
@@ -88,6 +93,8 @@ package VerlocityEngine.components
 
 			bEasing = true;
 			iEasingSpeed = 30;
+			
+			nZoom = 1;
 		}
 
 
@@ -121,12 +128,12 @@ package VerlocityEngine.components
 			{
 				if ( bEasing )
 				{
-					sprCamera.x -= mathHelper.Ease( sprCamera.x, pCenter.x - entFollow.x, iEasingSpeed );
-					sprCamera.y -= mathHelper.Ease( sprCamera.y, pCenter.y - entFollow.y, iEasingSpeed );
+					sprCamera.x -= mathHelper.Ease( sprCamera.x, pCenter.x - ( entFollow.x + ( entOffsetX / nZoom ) ) * nZoom, iEasingSpeed );
+					sprCamera.y -= mathHelper.Ease( sprCamera.y, pCenter.y - ( entFollow.y + ( entOffsetY / nZoom ) ) * nZoom, iEasingSpeed );
 				}
 				else
 				{
-					SetPos( entFollow.x, entFollow.y );
+					SetCenterPos( ( entFollow.x + ( entOffsetX / nZoom ) ) * nZoom, ( entFollow.y + ( entOffsetY / nZoom ) ) * nZoom );
 				}
 			}
 
@@ -225,12 +232,21 @@ package VerlocityEngine.components
 			StopMoveTo();
 			StopShaking();
 
-			Zoom( 1 );
+			SetZoom( 1 );
 			Rotate( 0 );
 			ResetPos();
 		}
 
-		public function SetPos( iPosX:int, iPosY:int ):void
+		public function get width():Number { return sprCamera.width; }
+		public function get height():Number { return sprCamera.height; }
+		public function get x():Number { return sprCamera.x; }
+		public function get y():Number { return sprCamera.y; }
+		public function set x( nPosX:Number ):void { sprCamera.x = nPosX; }
+		public function set y( nPosY:Number ):void { sprCamera.y = nPosY; }
+		public function get zoom():Number { return nZoom; }
+		public function set zoom( nSetZoom:Number ):void { nZoom = nSetZoom; sprCamera.scaleX = sprCamera.scaleY = nZoom; }
+
+		public function SetCenterPos( iPosX:int, iPosY:int ):void
 		{
 			sprCamera.x = pCenter.x - iPosX;
 			sprCamera.y = pCenter.y - iPosY;
@@ -241,9 +257,12 @@ package VerlocityEngine.components
 			sprCamera.x = 0; sprCamera.y = 0;
 		}
 		
-		public function Follow( ent:verBEnt, bEase:Boolean = true, iEaseSpeed:int = 30 ):void
+		public function Follow( ent:verBEnt, iOffsetX:int = 0, iOffsetY:int = 0, bEase:Boolean = true, iEaseSpeed:int = 30 ):void
 		{
 			entFollow = ent;
+			entOffsetX = iOffsetX;
+			entOffsetY = iOffsetY;
+			
 			bEasing = bEase;
 			iEasingSpeed = iEaseSpeed;
 		}
@@ -276,9 +295,10 @@ package VerlocityEngine.components
 			sprCamera.transform.matrix = m;
 		}
 		
-		public function Zoom( nZoom:Number ):void
+		public function SetZoom( nSetZoom:Number ):void
 		{
-			sprCamera.scaleX = nZoom; sprCamera.scaleY = nZoom;
+			nZoom = nSetZoom;
+			sprCamera.scaleX = sprCamera.scaleY = nZoom;
 		}
 		
 		public function Shake( iDuration:int, nForce:Number ):void
