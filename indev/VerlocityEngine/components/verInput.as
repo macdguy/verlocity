@@ -34,6 +34,7 @@
 		 ****************COMPONENT VARS******************
 		*/
 		private var objKeysDown:Object;
+		private var objKeyHistory:Object;
 		private var aComboKeys:Array;
 
 		private var bMouseDown:Boolean;
@@ -42,8 +43,6 @@
 
 		private var bHasKeyControls:Boolean = true;
 		private var bHasMouseControls:Boolean = true;
-		
-		private const INPUT_COMBOAMT:int = 5;
 
 		
 		/*
@@ -52,6 +51,7 @@
 		private function Construct():void
 		{
 			objKeysDown = new Object();
+			objKeyHistory = new Object();
 			aComboKeys = new Array();
 
 			// We don't want to remove these ever.
@@ -97,7 +97,7 @@
 			}
 			
 			aComboKeys.unshift( ke.keyCode );
-			aComboKeys.length = INPUT_COMBOAMT;
+			aComboKeys.length = VerlocitySettings.KEY_MAXCOMBO;
 
 			if ( Verlocity.state )
 			{
@@ -114,7 +114,25 @@
 		{
 			if ( !HasKeyControl ) { return; }
 
+			StoreKeyHistory( ke.keyCode );
+
 			delete objKeysDown[ ke.keyCode ];
+		}
+		
+		private function StoreKeyHistory( keyCode:uint ):void
+		{
+			// Check if we have history, create if we don't
+			if ( objKeyHistory[ keyCode ] == null )
+			{
+				objKeyHistory[ keyCode ] = new Vector.<int>();
+			}
+
+			// Get history
+			var vHistory:Vector.<int> = objKeyHistory[ keyCode ];
+
+			// Store last
+			vHistory.unshift( Verlocity.engine.CurTime() );
+			if ( vHistory.length > 2 ) { vHistory.length = 2; }
 		}
 		
 		private function MouseMove( me:MouseEvent ):void
@@ -173,6 +191,58 @@
 			return false;
 		}
 		
+		public function KeyIsDoubleTapped( key:* ):Boolean
+		{
+			if ( !objKeyHistory ) { return false; }
+
+			var vHistory:Vector.<int>;
+
+			// Get the history
+			if ( key is uint )
+			{
+				if ( key in objKeyHistory )
+				{
+					vHistory = objKeyHistory[ key ];
+				}
+			}
+			else if ( key is String )
+			{
+				if ( VerlocityHotkeys.Get( key ) in objKeyHistory )
+				{
+					vHistory = objKeyHistory[ VerlocityHotkeys.Get( key ) ];
+				}
+			}
+
+			// History invalid or too short
+			if ( !vHistory || vHistory.length < 2 ) { return false; }
+			
+			// Store key times
+			var keyFirst:int = vHistory[1];
+			var keyLast:int = vHistory[0];
+			
+			// Delete history, we don't need it anymore
+			if ( key is uint ) { delete objKeyHistory[key]; }
+			if ( key is String ) { delete objKeyHistory[ VerlocityHotkeys.Get( key ) ]; }
+
+			// Compare difference in time
+			if ( ( keyLast - keyFirst ) <= VerlocitySettings.KEY_DOUBLETAP_TIME )
+			{
+				return true;
+			}
+
+			return false;
+		}
+		
+		public function ClearKeyHistory():void
+		{
+			objKeyHistory = new Object();
+		}
+		
+		public function GetKeyHistory():Object
+		{
+			return objKeyHistory;
+		}
+		
 		public function KeyCombo( aKeyCombo:Array ):Boolean
 		{
 			if ( aKeyCombo.length > aComboKeys.length)
@@ -220,6 +290,7 @@
 			bHasKeyControls = true;
 
 			objKeysDown = new Object();
+			objKeyHistory = new Object();
 			aComboKeys = new Array();
 		}
 
@@ -230,6 +301,7 @@
 			bHasKeyControls = false;
 
 			objKeysDown = null;
+			objKeyHistory = null;
 			aComboKeys.length = 0;
 		}
 		

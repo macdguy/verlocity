@@ -101,10 +101,10 @@
 			bIsOnGround = false;
 		}
 		
-		public function IsOnGround():Boolean { return bIsOnGround; }
-		public function IsOnWall():Boolean { return bIsOnLeftWall || bIsOnRightWall; }
-		public function IsOnLeftWall():Boolean { return bIsOnLeftWall; }
-		public function IsOnRightWall():Boolean { return bIsOnRightWall; }
+		public function get IsOnGround():Boolean { return bIsOnGround; }
+		public function get IsOnWall():Boolean { return bIsOnLeftWall || bIsOnRightWall; }
+		public function get IsOnLeftWall():Boolean { return bIsOnLeftWall; }
+		public function get IsOnRightWall():Boolean { return bIsOnRightWall; }
 
 		protected function OnFeetCollide():void {}
 		protected function OnHeadCollide():void {}
@@ -119,8 +119,15 @@
 
 			if ( !objWorld ) { return; }
 
-			CollisionThink();
-			PhysicsThink();
+			// Don't update this when we don't need to.
+			if ( Math.abs( nVelX ) > 0 || Math.abs( nVelY ) > 0 )
+			{
+				CollisionThink();
+				PhysicsThink();
+			}
+
+			PreventPhasing();
+			GravityThink();
 
 			if ( VerlocitySettings.DEBUG )
 			{
@@ -143,6 +150,20 @@
 			colCenterY = col.height / 2;
 		}
 
+		private function PreventPhasing():void
+		{
+			// Ground phasing
+			while ( Hit3( col.absX, col.absY, colCenterX, NaN, -2 ) &&
+					!Hit( col.absX - col.width + 8, col.absY - nFootHeight ) && // check right and left
+					!Hit( col.absX + col.width - 8, col.absY - nFootHeight ) ) { y--; }
+
+			// Wall phasing (left)
+			while ( Hit( col.absX - col.width + 5, col.absY - nFootHeight ) ) { x += .1; }			
+			
+			// Wall phasing (right)
+			while ( Hit( col.absX + col.width - 5, col.absY - nFootHeight ) ) { x -= .1; }
+		}
+
 		private function CollisionThink():void
 		{
 			if ( !col ) { return; }
@@ -154,9 +175,6 @@
 				nVelY = -1; nVelY = 0;
 
 				bIsOnGround = true;
-				
-				// Keep on the top of the platform
-				while ( Hit3( col.absX, col.absY, colCenterX, NaN, -2 ) ) { y--; }
 
 				OnFeetCollide();
 			}
@@ -165,15 +183,18 @@
 				bIsOnGround = false;
 			}
 
-			// Check head collision
-			if ( Hit3( col.absX, col.absY - col.height, colCenterX, NaN, -1 ) )
+			if ( Math.abs( nVelY ) > 0 )
 			{
-				nLastVelY = nVelY;
+				// Check head collision
+				if ( Hit3( col.absX, col.absY - col.height, colCenterX, NaN, -1 ) )
+				{
+					nLastVelY = nVelY;
 
-				nVelY = 1; nVelY = 0;
-				y += 2;
+					nVelY = 1; nVelY = 0;
+					y += 2;
 
-				OnHeadCollide();
+					OnHeadCollide();
+				}
 			}
 			
 			// Check left side
@@ -184,15 +205,12 @@
 
 				bIsOnLeftWall = true;
 				OnLeftCollide();
-
-				// Prevent morphing through
-				while ( Hit( col.absX - col.width + 5, col.absY - nFootHeight ) ) { x += .1; }
 			}
 			else
 			{
 				bIsOnLeftWall = false;
 			}
-			
+				
 			// Check right side
 			if ( Hit( col.absX + col.width - 2, col.absY - nFootHeight ) )
 			{
@@ -201,13 +219,20 @@
 
 				bIsOnRightWall = true;
 				OnRightCollide();
-
-				// Prevent morphing through
-				while ( Hit( col.absX + col.width - 5, col.absY - nFootHeight ) ) { x -= .1; }
 			}
 			else
 			{
 				bIsOnRightWall = false;
+			}
+		}
+		
+		private function GravityThink():void
+		{
+			if ( bIsOnGround ) { return; }
+			
+			if ( nVelY < 8 )
+			{
+				nVelY += nDefaultGravity;
 			}
 		}
 		
@@ -221,10 +246,6 @@
 
 			if ( !bIsOnGround )
 			{
-				if ( nVelY < 10 )
-				{
-					nVelY += nDefaultGravity;
-				}
 				rotation -= rotation * .05;
 			}
 			else
