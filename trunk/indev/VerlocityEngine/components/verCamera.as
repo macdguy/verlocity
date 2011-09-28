@@ -265,6 +265,11 @@ package VerlocityEngine.components
 			
 			bEasing = bEase;
 			iEasingSpeed = iEaseSpeed;
+			
+			if ( bEasing )
+			{
+				SetCenterPos( ( entFollow.x + ( entOffsetX / nZoom ) ) * nZoom, ( entFollow.y + ( entOffsetY / nZoom ) ) * nZoom );
+			}
 		}
 		
 		public function StopFollowing():void

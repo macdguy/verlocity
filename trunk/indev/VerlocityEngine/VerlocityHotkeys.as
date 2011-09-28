@@ -41,9 +41,12 @@ package VerlocityEngine
 		objKeys["Right"] = Keyboard.RIGHT;
 		objKeys["Up"] = Keyboard.UP;
 		objKeys["Down"] = Keyboard.DOWN;
+
 		objKeys["Shoot"] = Keyboard.SPACE;
 		objKeys["Bomb"] = Keyboard.SHIFT;
-		objKeys["Jump"] = Keyboard.SPACE;
+
+		objKeys["Jump"] = Keyboard.A;
+		objKeys["Attack"] = Keyboard.S;
 		
 
 

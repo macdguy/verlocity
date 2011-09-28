@@ -146,6 +146,22 @@ package VerlocityEngine
 		 * (such as locating hidden buttons).
 		*/
 		public static const DISABLE_TAB:Boolean = true;
+		
+		
+		/*
+		 * KEY_MAXCOMBO represents the longest amount of key combos to compare
+		 * For example, if it's set to 5 you can only compare 5 keys with the
+		 * verInput.KeyCombo function.
+		*/
+		public static const KEY_MAXCOMBO:int = 5;
+		
+
+		/*
+		 * How long can we wait between key releases to check if they've been
+		 * double tapped? See verInput.KeyIsDoubleTapped.
+		 * Less time means less time to double tap.
+		*/
+		public static const KEY_DOUBLETAP_TIME:int = 500;
 
 		
 		/*
