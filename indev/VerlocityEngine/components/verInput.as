@@ -98,6 +98,11 @@ package VerlocityEngine.components
 
 			if ( objKeysDown )
 			{
+				if ( !objKeysDown[ ke.keyCode ] )
+				{
+					StoreKeyHistory( ke.keyCode );
+				}
+
 				objKeysDown[ ke.keyCode ] = true;
 			}
 			
@@ -119,7 +124,7 @@ package VerlocityEngine.components
 		{
 			if ( !HasKeyControl ) { return; }
 
-			StoreKeyHistory( ke.keyCode );
+			
 
 			delete objKeysDown[ ke.keyCode ];
 		}

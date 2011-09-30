@@ -5,6 +5,7 @@
 
 package VerlocityEngine.base.ents.characters 
 {
+	import flash.display.MovieClip;
 	import flash.geom.Point;
 	import flash.display.DisplayObject;
 	import VerlocityEngine.base.ents.verBExtendedEnt;
@@ -31,15 +32,19 @@ package VerlocityEngine.base.ents.characters
 		protected var nDefaultGravity:Number;
 		protected var nDefaultFriction:Number;
 		
-		private var bIsOnGround:Boolean;
-		private var bIsOnLeftWall:Boolean;
-		private var bIsOnRightWall:Boolean;
+		internal var bIsOnGround:Boolean;
+		internal var bIsOnLeftWall:Boolean;
+		internal var bIsOnRightWall:Boolean;
+		internal var bIsJumping:Boolean;
 		
 		protected var col:verBSprCollisionBox;
 		protected var colCenterX:Number;
 		protected var colCenterY:Number;
 		
 		private var iDebugTimer:int;
+		
+		protected var CurrentAnimation:MovieClip;
+		protected var CurrentAnimClass:Class;
 		
 		public function SetPlatformer( nSetJumpForce:Number = 8, nSetFootHeight:Number = 12,
 									   nAccel:Number = 1, nAirAccel:Number = 1,
@@ -104,9 +109,11 @@ package VerlocityEngine.base.ents.characters
 		{
 			nVelY = -nJumpForce; y--;
 			bIsOnGround = false;
+			bIsJumping = true;
 		}
 		
 		public function get IsOnGround():Boolean { return bIsOnGround; }
+		public function get IsJumping():Boolean { return bIsJumping; }
 		public function get IsOnWall():Boolean { return bIsOnLeftWall || bIsOnRightWall; }
 		public function get IsOnLeftWall():Boolean { return bIsOnLeftWall; }
 		public function get IsOnRightWall():Boolean { return bIsOnRightWall; }
@@ -149,27 +156,32 @@ package VerlocityEngine.base.ents.characters
 		}
 		
 		public function UpdateCollisionInfo():void
-		{	
+		{
 			col = collision as verBSprCollisionBox;
+			
+			if ( !col ) { return; }
+
 			colCenterX = col.width / 2;
 			colCenterY = col.height / 2;
 		}
 
-		private function PreventPhasing():void
+		internal function PreventPhasing():void
 		{
+			if ( !col ) { return; }
+
 			// Ground phasing
 			while ( Hit3( col.absX, col.absY, colCenterX, NaN, -2 ) &&
-					!Hit( col.absX - col.width + 8, col.absY - nFootHeight ) && // check right and left
-					!Hit( col.absX + col.width - 8, col.absY - nFootHeight ) ) { y--; }
+					!Hit( col.absX - colCenterX - 5, col.absY - nFootHeight ) && // check right and left
+					!Hit( col.absX + colCenterX + 5, col.absY - nFootHeight ) ) { y--; }
 
 			// Wall phasing (left)
-			while ( Hit( col.absX - col.width + 5, col.absY - nFootHeight ) ) { x += .1; }			
+			while ( Hit( col.absX - colCenterX - 2, col.absY - nFootHeight ) ) { x += .1; }			
 			
 			// Wall phasing (right)
-			while ( Hit( col.absX + col.width - 5, col.absY - nFootHeight ) ) { x -= .1; }
+			while ( Hit( col.absX + colCenterX + 2, col.absY - nFootHeight ) ) { x -= .1; }
 		}
 
-		private function CollisionThink():void
+		internal function CollisionThink():void
 		{
 			if ( !col ) { return; }
 	
@@ -180,6 +192,7 @@ package VerlocityEngine.base.ents.characters
 				nVelY = -1; nVelY = 0;
 
 				bIsOnGround = true;
+				bIsJumping = false;
 
 				OnFeetCollide();
 			}
@@ -201,9 +214,9 @@ package VerlocityEngine.base.ents.characters
 					OnHeadCollide();
 				}
 			}
-			
+
 			// Check left side
-			if ( Hit( col.absX - col.width + 2, col.absY - nFootHeight ) )
+			if ( Hit( col.absX - colCenterX - 8, col.absY - nFootHeight ) )
 			{
 				nLastVelX = nVelX;
 				nVelX = 1; nVelX = 0;
@@ -217,7 +230,7 @@ package VerlocityEngine.base.ents.characters
 			}
 				
 			// Check right side
-			if ( Hit( col.absX + col.width - 2, col.absY - nFootHeight ) )
+			if ( Hit( col.absX + colCenterX + 8, col.absY - nFootHeight ) )
 			{
 				nLastVelX = nVelX;
 				nVelX = -1; nVelX = 0;
@@ -301,7 +314,7 @@ package VerlocityEngine.base.ents.characters
 			// default to world
 			if ( !hitObject ) { hitObject = objWorld; }
 
-			if ( VerlocitySettings.DEBUG )
+			if ( VerlocitySettings.COLLISION_DEBUG )
 			{
 				var uiTestColor:uint = 0xFF0000;
 				if ( hitObject.hitTestPoint( x, y, true ) )
@@ -336,6 +349,25 @@ package VerlocityEngine.base.ents.characters
 			}
 			
 			return false;
+		}
+
+		public function SetAnimation( animClass:Class ):void
+		{
+			if ( CurrentAnimClass && ( CurrentAnimClass == animClass ) ) { return; }
+
+			// TODO clean this up, minimize memory usage
+			CurrentAnimClass = animClass;
+			
+			// Remove last
+			if ( CurrentAnimation )
+			{
+				removeChild( CurrentAnimation );
+				CurrentAnimation = null;
+			}
+
+			// Add animation
+			CurrentAnimation = new animClass();
+			addChild( CurrentAnimation );
 		}
 		
 		public override function Dispose():void

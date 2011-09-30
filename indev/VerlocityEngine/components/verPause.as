@@ -215,6 +215,21 @@ package VerlocityEngine.components
 
 		public function Resume():void
 		{
+			// Remove the pause menu
+			if ( guiPauseMenu )
+			{
+				Verlocity.layers.layerUI.removeChild( guiPauseMenu );
+				if ( !VerlocitySettings.PAUSEMENU_GUI ) { verGUIPauseMenu( guiPauseMenu ).Dispose(); }
+				guiPauseMenu = null;
+			}
+			
+			// Remove the BG
+			if ( sPauseBG )
+			{
+				Verlocity.layers.layerUI.removeChild( sPauseBG );
+				sPauseBG = null;
+			}
+
 			if ( !IsPaused ) { return; }
 
 			Verlocity.engine.Resume();
@@ -225,19 +240,7 @@ package VerlocityEngine.components
 			Verlocity.input.ForceFocus();
 
 			//Verlocity.stage.frameRate = VerlocitySettings.FRAMERATE;
-			PauseAnimation( false );
-			
-			// Remove the BG
-			Verlocity.layers.layerUI.removeChild( sPauseBG );
-			sPauseBG = null;
-			
-			// Remove the pause menu
-			if ( guiPauseMenu )
-			{
-				Verlocity.layers.layerUI.removeChild( guiPauseMenu );
-				if ( !VerlocitySettings.PAUSEMENU_GUI ) { verGUIPauseMenu( guiPauseMenu ).Dispose(); }
-				guiPauseMenu = null;
-			}
+			PauseAnimation( false );			
 
 			VerlocityMessages.Create( VerlocityLanguage.T( "VerlocityUnpause" ) );
 		}
