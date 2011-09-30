@@ -24,11 +24,11 @@ package VerlocityEngine.components
 	import flash.display.MovieClip;
 	import flash.utils.getQualifiedClassName;
 	import flash.utils.getDefinitionByName;
-	import VerlocityEngine.base.ents.verBTriggerMultiple;
 
 	import VerlocityEngine.Verlocity;
 	import VerlocityEngine.VerlocityLanguage;
 	import VerlocityEngine.base.ents.verBEnt;
+	import VerlocityEngine.base.ents.characters.verBCharPlatforming;
 	import VerlocityEngine.base.verBLayer;
 
 	public final class verEnts extends Object
@@ -167,7 +167,7 @@ package VerlocityEngine.components
 			return newEnt;
 		}
 
-		public function RegisterContained( disp:MovieClip ):void
+		public function RegisterContained( disp:MovieClip, newLayer:* = null, platWorld:DisplayObject = null ):void
 		{
 			if ( disp.numChildren == 0 ) { return; }
 
@@ -176,7 +176,7 @@ package VerlocityEngine.components
 			var iNum:int = disp.numChildren - 1;
 
 			// TODO: Solve sorting issue
-			for ( var i:int = 0; i <= iNum; i++ )
+			for ( var i:int = iNum; i > 0; i-- )
 			{
 				original = disp.getChildAt( i );
 
@@ -185,12 +185,20 @@ package VerlocityEngine.components
 					var originalName:String = getQualifiedClassName( original );
 					var originalClass:Class = getDefinitionByName( originalName ) as Class;
 
-					original.visible = false; // TODO: Fix removing child issue.
+					original.visible = false;
+					disp.removeChild( original );
 
-					var bc:* = RecreateEnt( originalClass, original.x, original.y, original.rotation );
+					var bc:* = RecreateEnt( originalClass, verBEnt( original ).absX, verBEnt( original ).absY, original.rotation );
 					if ( bc )
 					{
-						disp.addChild( bc );
+						if ( !newLayer ) { disp.addChild( bc ); }
+						verBEnt( bc ).Spawn( newLayer );
+						
+						if ( platWorld && bc is verBCharPlatforming )
+						{
+							verBCharPlatforming( bc ).SetCollisionWorld( platWorld );
+						}
+
 						Verlocity.Trace( "Ents", "Registered contained ent: " + originalClass );
 					}
 					else

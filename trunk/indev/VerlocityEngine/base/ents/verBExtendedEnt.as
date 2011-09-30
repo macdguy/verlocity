@@ -10,6 +10,7 @@ package VerlocityEngine.base.ents
 	import flash.geom.Rectangle;
 	
 	import VerlocityEngine.Verlocity;
+	import VerlocityEngine.VerlocitySettings;
 	import VerlocityEngine.util.mathHelper;
 
 	public class verBExtendedEnt extends verBEnt
@@ -141,8 +142,16 @@ package VerlocityEngine.base.ents
 
 			entCollision.graphics.clear();
 
-			entCollision.graphics.beginFill( 0x00, 0 );
-				entCollision.graphics.drawRect( colX, colY, colWidth, colHeight );
+			if ( VerlocitySettings.COLLISION_DEBUG )
+			{
+				entCollision.graphics.beginFill( 0xFF0000, .5 );
+			}
+			else
+			{
+				entCollision.graphics.beginFill( 0x00, 0 );
+			}
+
+			entCollision.graphics.drawRect( colX, colY, colWidth, colHeight );
 			entCollision.graphics.endFill();
 			
 			addChild( entCollision );
@@ -164,7 +173,7 @@ package VerlocityEngine.base.ents
 
 				if ( this != refCurrentEnt )
 				{
-					if ( IsTouching( refCurrentEnt ) )
+					if ( IsTouching( refCurrentEnt, true ) )
 					{
 						OnCollide( verBEnt( refCurrentEnt ) );
 					}

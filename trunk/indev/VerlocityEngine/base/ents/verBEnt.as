@@ -421,6 +421,14 @@ package VerlocityEngine.base.ents
 			nFrictionX = nNewFrictionX;
 			nFrictionY = nNewFrictionY;
 		}
+		
+		public function PhysPush( nAddVelX:Number, nAddVelY:Number ):void
+		{
+			if ( !bPhysicsEnabled ) { Verlocity.Trace( "Ent", "Tried to push entity when physics was not initialized!" ); return; }
+
+			nVelX += nAddVelX;
+			nVelY -= nAddVelY;
+		}
 
 	}
 

@@ -39,6 +39,7 @@ package VerlocityEngine
 		 * To activate the console press ~ on your keyboard.
 		*/
 		public static const DEBUG:Boolean = true; // overall debug mode - enables verConsole
+		public static const COLLISION_DEBUG:Boolean = false; // debug that draws useful red dots and boxes for collision detection
 		public static const UI_DEBUG:Boolean = false; // debug specifically for UI - draws boxes where appropriate
 		public static const A3D_DEBUG:Boolean = false; // debug specifically for 3D - draws the 3D axises
 
@@ -162,11 +163,11 @@ package VerlocityEngine
 		
 
 		/*
-		 * How long can we wait between key releases to check if they've been
+		 * How long can we wait between key presses to check if they've been
 		 * double tapped? See verInput.KeyIsDoubleTapped.
 		 * Less time means less time to double tap.
 		*/
-		public static const KEY_DOUBLETAP_TIME:int = 500;
+		public static const KEY_DOUBLETAP_TIME:int = 800;
 
 		
 		/*
