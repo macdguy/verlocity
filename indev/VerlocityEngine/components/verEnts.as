@@ -28,7 +28,7 @@ package VerlocityEngine.components
 	import VerlocityEngine.Verlocity;
 	import VerlocityEngine.VerlocityLanguage;
 	import VerlocityEngine.base.ents.verBEnt;
-	import VerlocityEngine.base.ents.characters.verBCharPlatforming;
+	import VerlocityEngine.base.ents.physics.verBDynamicCollider;
 	import VerlocityEngine.base.verBLayer;
 
 	public final class verEnts extends Object
@@ -153,6 +153,8 @@ package VerlocityEngine.components
 			vEnts[ vEnts.length ] = ent;
 			ent.id = vEnts.length;
 			
+			ent.Init();
+			
 			return true;
 		}
 
@@ -194,9 +196,9 @@ package VerlocityEngine.components
 						if ( !newLayer ) { disp.addChild( bc ); }
 						verBEnt( bc ).Spawn( newLayer );
 						
-						if ( platWorld && bc is verBCharPlatforming )
+						if ( platWorld && bc is verBDynamicCollider )
 						{
-							verBCharPlatforming( bc ).SetCollisionWorld( platWorld );
+							verBDynamicCollider( bc ).SetCollisionWorld( platWorld );
 						}
 
 						Verlocity.Trace( "Ents", "Registered contained ent: " + originalClass );

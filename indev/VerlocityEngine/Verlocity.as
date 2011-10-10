@@ -27,6 +27,7 @@ package VerlocityEngine
 	import flash.events.Event;
 
 	import VerlocityEngine.components.*;
+	import VerlocityEngine.libraries.Global.Global;
 
 	public final class Verlocity extends Object
 	{
@@ -49,6 +50,7 @@ package VerlocityEngine
 		 **********************VARS***********************
 		*/
 		private static var sStage:Stage;
+		public static var G_:Global = Global.getInstance();
 		
 		
 		/*

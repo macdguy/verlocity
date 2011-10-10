@@ -20,7 +20,6 @@ package VerlocityEngine.base.ents
 	{
 		public function verBEnt():void
 		{
-			Init();
 			stop();
 		}
 
@@ -51,14 +50,10 @@ package VerlocityEngine.base.ents
 		protected var spawnX:int;
 		protected var spawnY:int;
 		protected var bIsSpawned:Boolean;
+		protected var sLayer:String;
 
 		public function Spawn( layer:* ):void
 		{
-			play();
-			
-			bIsSpawned = true;
-			spawnX = x; spawnY = y;
-
 			if ( layer is String )
 			{
 				layer = Verlocity.layers.Get( layer );
@@ -67,20 +62,23 @@ package VerlocityEngine.base.ents
 			{
 				layer = layer;
 			}
-			else
-			{
-				return;
-			}
 
-			if ( layer != null )
-			{
-				layer.addChild( this );
-				OnSpawn();
-			}
-			else
-			{
-				Verlocity.Trace( "Ents", "Unable to spawn entity! Check spawn layer is correct!" );
-			}
+			if ( !layer ) { Verlocity.Trace( "Ents", "Unable to spawn entity! Check spawn layer is correct!" ); return; }
+
+			layer.addChild( this );
+			sLayer = layer;
+			
+			play();
+			
+			bIsSpawned = true;
+			spawnX = x; spawnY = y;
+
+			OnSpawn();
+		}
+		
+		public function GetLayerName():String
+		{
+			return sLayer;
 		}
 
 
@@ -94,6 +92,7 @@ package VerlocityEngine.base.ents
 
 			entOwner = null;
 
+			spawnX = NaN; spawnY = NaN;
 			bIsSpawned = false;
 			rectBounds = null;
 			iBoundPadding = NaN;
@@ -325,7 +324,7 @@ package VerlocityEngine.base.ents
 		*/
 		protected var bPhysicsEnabled:Boolean;
 
-		protected var nVelX:Number, nVelY:Number;
+		public var nVelX:Number, nVelY:Number;
 		protected var nGravityX:Number, nGravityY:Number;
 		protected var nFrictionX:Number, nFrictionY:Number;
 

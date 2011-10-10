@@ -17,7 +17,7 @@ package VerlocityEngine.base.ents.npcs
 		protected var bIsMoving:Boolean = true;
 		protected var bMoveWhileOffScreen:Boolean;
 
-		protected var entCharacter:verBEnt;
+		protected var entCharacter:verBCharPlatforming;
 
 		protected var bFollow:Boolean;
 		protected var bAutoJump:Boolean;
@@ -36,6 +36,19 @@ package VerlocityEngine.base.ents.npcs
 			{
 				MovementThink();
 				CharacterCollisionThink();
+			}
+		}
+
+		private function MovementThink():void
+		{
+			if ( FacingRight ) 
+			{
+				MoveRight();
+			}
+			
+			if ( FacingLeft )
+			{
+				MoveLeft();
 			}
 		}
 		
@@ -80,7 +93,7 @@ package VerlocityEngine.base.ents.npcs
 			if ( !entCharacter ) { return; }
 
 			// Check left side
-			if ( Hit( col.absX - col.width + 2, col.absY - nFootHeight, entCharacter ) )
+			if ( Hit( col.absX - col.width + 2, col.absY - colCenterY, entCharacter ) )
 			{
 				OnHitCharacter();
 
@@ -89,7 +102,7 @@ package VerlocityEngine.base.ents.npcs
 			}
 				
 			// Check right side
-			if ( Hit( col.absX + col.width - 2, col.absY - nFootHeight, entCharacter ) )
+			if ( Hit( col.absX + col.width - 2, col.absY - colCenterY, entCharacter ) )
 			{
 				OnHitCharacter();
 
@@ -97,8 +110,11 @@ package VerlocityEngine.base.ents.npcs
 				nVelX = 0;
 			}
 		}
-		protected function OnHitCharacter():void { }
-		
+		protected function OnHitCharacter():void {}
+
+		public function SetCharacter( ent:verBCharPlatforming ):void { entCharacter = ent; }
+		public function GetCharacter():verBCharPlatforming { return entCharacter; }
+
 		public function SetFollow( bSetFollow:Boolean, iSetMinFollowDist:int, bSetAutoJump:Boolean ):void
 		{
 			bFollow = bSetFollow;
@@ -106,41 +122,12 @@ package VerlocityEngine.base.ents.npcs
 			bAutoJump = bSetAutoJump;
 		}
 		
-		public function SetCharacter( ent:verBEnt ):void
-		{
-			entCharacter = ent;
-		}
-		
-		public function GetCharacter():verBEnt
-		{
-			return entCharacter;
-		}
 
-		
-		private function MovementThink():void
+		public override function Dispose():void
 		{
-			if ( FacingRight ) 
-			{
-				MoveRight();
-			}
+			super.Dispose();
 			
-			if ( FacingLeft )
-			{
-				MoveLeft();
-			}
+			entCharacter = null;
 		}
-		
-		protected function FaceRight():void
-		{
-			scaleX = 1;
-		}
-		
-		protected function FaceLeft():void
-		{
-			scaleX = -1;
-		}
-
-		protected function get FacingRight():Boolean { return scaleX > 0; }
-		protected function get FacingLeft():Boolean { return scaleX < 0; }
 	}
 }
