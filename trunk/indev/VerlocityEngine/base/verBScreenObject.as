@@ -5,6 +5,7 @@
 
 package VerlocityEngine.base
 {
+	import VerlocityEngine.Verlocity;
 	import flash.display.DisplayObject;
 	import VerlocityEngine.helpers.ElapsedTrigger;
 	
@@ -66,6 +67,9 @@ package VerlocityEngine.base
 			 ============================
 		*/
 
+		protected var previousX:Number = 0;
+		protected var previousY:Number = 0;
+
 		/**
 		 * Sets the X and Y position of the screen object.
 		 * @param	iPosX The X position to set the screen object to.
@@ -74,7 +78,16 @@ package VerlocityEngine.base
 		*/
 		public function SetPos( iPosX:int, iPosY:int ):void
 		{
+			previousX = x; previousY = x;
 			x = iPosX; y = iPosY;
+		}
+
+		public override function set x (value:Number):void { previousX = x; super.x = value; }
+		public override function set y (value:Number):void { previousY = y; super.y = value; }
+		
+		public function HasMoved():Boolean
+		{
+			return previousX != x || previousY != y;
 		}
 
 		/**
@@ -104,6 +117,11 @@ package VerlocityEngine.base
 		public function GetAngle():Point
 		{
 			return angleHelper.AngleOfRotation( rotation );
+		}
+		
+		public function GetMouseRotation():Number
+		{
+			return angleHelper.Rotation( absX, absY, Verlocity.input.Mx, Verlocity.input.My );
 		}
 
 		/*

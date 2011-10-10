@@ -22,9 +22,13 @@ package VerlocityEngine.base.ents
 
 		protected var bIsDying:Boolean;
 
+		protected var bPreformCollisionCheck:Boolean;
+
 		public function verBExtendedEnt():void
 		{
 			super();
+			
+			SetCollision( true );
 
 			var rectBounds:Rectangle = getBounds( this );
 			SetCollisionBox( rectBounds.x, rectBounds.y, rectBounds.width, rectBounds.height );
@@ -36,7 +40,11 @@ package VerlocityEngine.base.ents
 
 			if ( !bIsBeingRemoved )
 			{
-				CollisionThink();
+				if ( bPreformCollisionCheck )
+				{
+					CollisionThink();
+				}
+
 				DeathThink();
 			}
 
@@ -59,8 +67,6 @@ package VerlocityEngine.base.ents
 			}
 
 			entHealth = NaN;
-		
-			spawnX = NaN; spawnY = NaN;
 			spawnHealth = NaN;
 
 			bIsDying = false;
@@ -132,6 +138,13 @@ package VerlocityEngine.base.ents
 
 			OnRespawn();
 		}
+		
+		public override function Spawn( layer:* ):void
+		{
+			super.Spawn( layer );
+			
+			spawnHealth = entHealth;
+		}
 
 		public function SetCollisionBox( colX:int = 0, colY:int = 0, colWidth:int = 10, colHeight:int = 10 ):void
 		{
@@ -194,11 +207,16 @@ package VerlocityEngine.base.ents
 			return this;
 		}
 		
+		public function SetCollision( bShouldCheckCollision:Boolean = true ):void
+		{
+			bPreformCollisionCheck = bShouldCheckCollision;
+		}
+		
 		public function IsTouching( ent:DisplayObject, bUseCollisionBox:Boolean = false ):Boolean
 		{
 			if ( bUseCollisionBox )
 			{
-				return entCollision.hitTestObject( ent );
+				return collision.hitTestObject( ent );
 			}
 
 			return hitTestObject( ent );

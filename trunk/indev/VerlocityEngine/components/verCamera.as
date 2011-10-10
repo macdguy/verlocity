@@ -74,6 +74,8 @@ package VerlocityEngine.components
 
 		private var bEasing:Boolean;
 		private var iEasingSpeed:int;
+		private var bIsEasingX:Boolean;
+		private var bIsEasingY:Boolean;
 		
 		private var iShakeDuration:int;
 		private var nShakeForce:Number;
@@ -110,41 +112,17 @@ package VerlocityEngine.components
 		{
 			if ( pGoto )
 			{
-				if ( sprCamera.x != pCenter.x - pGoto.x || sprCamera.y != pCenter.y - pGoto.y )
-				{
-					if ( bEasing )
-					{
-						sprCamera.x -= mathHelper.Ease( sprCamera.x, pCenter.x - pGoto.x, iEasingSpeed );
-						sprCamera.y -= mathHelper.Ease( sprCamera.y, pCenter.y - pGoto.y, iEasingSpeed );
-					}
-					else
-					{
-						sprCamera.x = mathHelper.Approach( sprCamera.x, pCenter.x - pGoto.x, 2 );
-						sprCamera.y = mathHelper.Approach( sprCamera.y, pCenter.y - pGoto.y, 2 );
-					}
-				}
-				else
-				{
-					pGoto = null;
-				}
+				GotoThink();
 			}
 			
 			if ( entFollow && !pGoto )
 			{
-				if ( bEasing )
-				{
-					sprCamera.x -= mathHelper.Ease( sprCamera.x, pCenter.x - ( entFollow.x + ( entOffsetX / nZoom ) ) * nZoom, iEasingSpeed );
-					sprCamera.y -= mathHelper.Ease( sprCamera.y, pCenter.y - ( entFollow.y + ( entOffsetY / nZoom ) ) * nZoom, iEasingSpeed );
-				}
-				else
-				{
-					SetCenterPos( ( entFollow.x + ( entOffsetX / nZoom ) ) * nZoom, ( entFollow.y + ( entOffsetY / nZoom ) ) * nZoom );
-				}
+				FollowThink()
 			}
 
 			if ( pBeforeShake )
 			{
-				HandleShake();
+				ShakeThink();
 			}
 		}
 		
@@ -156,14 +134,88 @@ package VerlocityEngine.components
 		/*------------------ PRIVATE ------------------*/
 		internal function Get():Sprite { return sprCamera; }
 		internal function GetView():Shape { return sCameraViewArea; }
+
+		private function GotoThink():void
+		{
+			if ( sprCamera.x != pCenter.x - pGoto.x || sprCamera.y != pCenter.y - pGoto.y )
+			{
+				if ( bEasing )
+				{
+					var newX:Number = pCenter.x - pGoto.x;
+					var newY:Number = pCenter.y - pGoto.y;
+						
+					if ( Math.abs( sprCamera.x - newX ) > 1 )
+					{
+						sprCamera.x -= mathHelper.Ease( sprCamera.x, newX, iEasingSpeed );
+						bIsEasingX = true;
+					}
+					else
+					{
+						bIsEasingX = false;
+					}
+						
+					if ( Math.abs( sprCamera.y - newY ) > 1 )
+					{
+						sprCamera.y -= mathHelper.Ease( sprCamera.y, newY, iEasingSpeed );
+						bIsEasingY = true;
+					}
+					else
+					{
+						bIsEasingY = false;
+					}
+				}
+				else
+				{
+					sprCamera.x = mathHelper.Approach( sprCamera.x, pCenter.x - pGoto.x, 2 );
+					sprCamera.y = mathHelper.Approach( sprCamera.y, pCenter.y - pGoto.y, 2 );
+				}
+			}
+			else
+			{
+				pGoto = null;
+			}			
+		}
 		
-		private function HandleShake():void
+		private function FollowThink():void
+		{
+			if ( bEasing )
+			{
+				var newFX:Number = pCenter.x - ( entFollow.x + ( entOffsetX / nZoom ) ) * nZoom;
+				var newFY:Number = pCenter.y - ( entFollow.y + ( entOffsetY / nZoom ) ) * nZoom;
+
+				if ( Math.abs( sprCamera.x - newFX ) > 1 )
+				{
+					sprCamera.x -= mathHelper.Ease( sprCamera.x, newFX, iEasingSpeed );
+					bIsEasingX = true;
+				}
+				else
+				{
+					bIsEasingX = false;
+				}
+					
+				if ( Math.abs( sprCamera.y - newFY ) > 1 )
+				{
+					sprCamera.y -= mathHelper.Ease( sprCamera.y, newFY, iEasingSpeed );
+					bIsEasingY = true;
+				}
+				else
+				{
+					bIsEasingY = false;
+				}
+			}
+			else
+			{
+				SetCenterPos( ( entFollow.x + ( entOffsetX / nZoom ) ) * nZoom, ( entFollow.y + ( entOffsetY / nZoom ) ) * nZoom );
+			}
+		}
+
+		private function ShakeThink():void
 		{
 			if ( iShakeDuration > Verlocity.engine.CurTime() )
 			{
 				if ( Math.random() > .5 )
 				{
-					if ( Math.random() > .5 )
+					if ( Math.random() > .5 ) 
 					{
 						sprCamera.x -= Math.sin( Verlocity.engine.CurTime() / 100 ) * nShakeForce;
 					}
@@ -250,6 +302,10 @@ package VerlocityEngine.components
 		public function set y( nPosY:Number ):void { sprCamera.y = nPosY; }
 		public function get zoom():Number { return nZoom; }
 		public function set zoom( nSetZoom:Number ):void { nZoom = nSetZoom; sprCamera.scaleX = sprCamera.scaleY = nZoom; }
+
+		public function get IsEasingX():Boolean { return bIsEasingX; }
+		public function get IsEasingY():Boolean { return bIsEasingY; }
+		public function get IsEasing():Boolean { return bIsEasingX || bIsEasingY; }
 
 		public function SetCenterPos( iPosX:int, iPosY:int ):void
 		{
