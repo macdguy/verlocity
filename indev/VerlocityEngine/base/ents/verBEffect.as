@@ -5,25 +5,25 @@
 
 package VerlocityEngine.base.ents
 {
+	import VerlocityEngine.Verlocity;
 	import flash.display.DisplayObject;
 
 	public class verBEffect extends verBEnt
 	{
 		private var effAttachment:DisplayObject;
-		
-		public function verBEffect():void
-		{
-			super();
-			play();
-		}
+		protected var bNoAnimation:Boolean;
 
 		public override function InternalThink():void
 		{
-			if ( totalFrames == 0 ) {  Remove(); return; }
-
 			super.InternalThink();
-			
-			EffectThink();
+
+			if ( !bNoAnimation )
+			{
+				if ( totalFrames == 0 ) {  Remove(); return; }
+
+				EffectThink();
+			}
+
 			AttachmentThink();
 		}
 		
@@ -49,6 +49,9 @@ package VerlocityEngine.base.ents
 			effAttachment = newAttachment;
 		}
 		
-		
+		public function RemoveAttachment():void
+		{
+			effAttachment = null;
+		}
 	}
 }

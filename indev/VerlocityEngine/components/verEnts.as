@@ -117,8 +117,11 @@ package VerlocityEngine.components
 				}
 				else
 				{
-					refCurrent.InternalThink();
-					refCurrent.Think();
+					if ( refCurrent.IsThinking() )
+					{
+						refCurrent.InternalThink();
+						refCurrent.Think();
+					}
 				}
 
 				refCurrent = null;
@@ -301,7 +304,51 @@ package VerlocityEngine.components
 			return returnEnts;
 		}
 		
-		public function RemoveAllClass( entClass:Class ):void
+		public function RemoveAllClass( entClass:Class, bRemoveProtected:Boolean = false ):void
+		{
+			var iLength:int = vEnts.length;
+			if ( iLength <= 0 ) { return; } 
+
+			var i:int = iLength - 1;
+			var refCurrent:verBEnt;
+
+			while( i >= 0 )
+			{
+				refCurrent = vEnts[i];
+				
+				if ( ( bRemoveProtected || !refCurrent.IsProtected() ) && refCurrent.GetClass() == entClass )
+				{
+					refCurrent.Remove();
+				}
+
+				refCurrent = null;
+				i--;
+			}
+		}
+		
+		public function RemoveAllType( sType:String, bRemoveProtected:Boolean = false ):void
+		{
+			var iLength:int = vEnts.length;
+			if ( iLength <= 0 ) { return; } 
+
+			var i:int = iLength - 1;
+			var refCurrent:verBEnt;
+
+			while( i >= 0 )
+			{
+				refCurrent = vEnts[i];
+
+				if ( ( bRemoveProtected || !refCurrent.IsProtected() ) && refCurrent.IsT( sType ) )
+				{
+					refCurrent.Remove();
+				}
+
+				refCurrent = null;
+				i--;
+			}
+		}
+		
+		public function PauseAllClass( entClass:Class ):void
 		{
 			var iLength:int = vEnts.length;
 			if ( iLength <= 0 ) { return; } 
@@ -315,7 +362,8 @@ package VerlocityEngine.components
 				
 				if ( refCurrent.GetClass() == entClass )
 				{
-					refCurrent.Remove();
+					refCurrent.PauseThink();
+					refCurrent.pause();
 				}
 
 				refCurrent = null;
@@ -323,7 +371,7 @@ package VerlocityEngine.components
 			}
 		}
 		
-		public function RemoveAllType( sType:String ):void
+		public function PauseAllType( sType:String ):void
 		{
 			var iLength:int = vEnts.length;
 			if ( iLength <= 0 ) { return; } 
@@ -337,7 +385,54 @@ package VerlocityEngine.components
 
 				if ( refCurrent.IsT( sType ) )
 				{
-					refCurrent.Remove();
+					refCurrent.PauseThink();
+					refCurrent.pause();
+				}
+
+				refCurrent = null;
+				i--;
+			}
+		}
+
+		public function ResumeThinkAllClass( entClass:Class ):void
+		{
+			var iLength:int = vEnts.length;
+			if ( iLength <= 0 ) { return; } 
+
+			var i:int = iLength - 1;
+			var refCurrent:verBEnt;
+
+			while( i >= 0 )
+			{
+				refCurrent = vEnts[i];
+				
+				if ( refCurrent.GetClass() == entClass )
+				{
+					refCurrent.ResumeThink();
+					refCurrent.resume();
+				}
+
+				refCurrent = null;
+				i--;
+			}
+		}
+		
+		public function ResumeThinkAllType( sType:String ):void
+		{
+			var iLength:int = vEnts.length;
+			if ( iLength <= 0 ) { return; } 
+
+			var i:int = iLength - 1;
+			var refCurrent:verBEnt;
+
+			while( i >= 0 )
+			{
+				refCurrent = vEnts[i];
+
+				if ( refCurrent.IsT( sType ) )
+				{
+					refCurrent.ResumeThink();
+					refCurrent.resume();
 				}
 
 				refCurrent = null;

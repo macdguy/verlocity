@@ -23,6 +23,8 @@ package VerlocityEngine.components
 	import flash.display.Sprite;
 	import flash.geom.ColorTransform;
 	import flash.geom.Point;
+	import VerlocityEngine.base.ents.verBEffect;
+	import VerlocityEngine.base.ents.verBScrEffect;
 
 	import VerlocityEngine.Verlocity;
 	import VerlocityEngine.VerlocityLanguage;
@@ -91,7 +93,7 @@ package VerlocityEngine.components
 				layerUI.graphics.endFill();
 			layerContained.addChildAt( layerUI, 0 );
 
-			// ScreenFX layer for verScreenFX
+			// ScreenFX layer for screen FX
 			layerScrFX = new Sprite();
 			layerContained.addChildAt( layerScrFX, 0 );
 
@@ -308,6 +310,11 @@ package VerlocityEngine.components
 			{
 				objLayers[sName].y = 0;
 			}
+		}
+		
+		public function AddSFX( eff:verBScrEffect ):void
+		{
+			layerScrFX.addChild( eff );
 		}
 	}
 }
