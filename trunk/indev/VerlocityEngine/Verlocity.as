@@ -95,7 +95,6 @@ package VerlocityEngine
 			
 			VerlocityComponents.Register( "verSoundAnalyzer", verSoundAnalyzer ); // requires verEngine
 			VerlocityComponents.Register( "verAchievements", verAchievements ); // requires verEngine, verLayers
-			VerlocityComponents.Register( "verScrFX", verScreenFX ); // requires verEngine, verLayers
 			VerlocityComponents.Register( "verSoundscape", verSoundscape );
 			VerlocityComponents.Register( "ver3D", ver3D ); // requires verEngine, verLayers
 		}		
@@ -129,7 +128,6 @@ package VerlocityEngine
 		public static function get pause():verPause { return VerlocityComponents.Get( "verPause" ); }
 		public static function get analyzer():verSoundAnalyzer { return VerlocityComponents.Get( "verSoundAnalyzer" ); }
 		public static function get achievements():verAchievements { return VerlocityComponents.Get( "verAchievements" ); }
-		public static function get scrFX():verScreenFX { return VerlocityComponents.Get( "verScrFX" ); }
 		public static function get soundscape():verSoundscape { return VerlocityComponents.Get( "verSoundscape" ); }
 
 		// Togglable components
@@ -218,7 +216,6 @@ package VerlocityEngine
 			if ( ents ) { ents.RemoveAll( bRemoveProtected ); }
 			if ( layers ) { layers.RemoveAll(); }
 
-			if ( scrFX ) { scrFX.RemoveAll( bRemoveProtected ); }
 			if ( camera ) { camera.Reset(); }
 
 			if ( ui ) { ui.RemoveAll(); }

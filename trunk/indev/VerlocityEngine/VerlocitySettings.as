@@ -38,8 +38,8 @@ package VerlocityEngine
 		 * verConsole, among various other tools.
 		 * To activate the console press ~ on your keyboard.
 		*/
-		public static const DEBUG:Boolean = true; // overall debug mode - enables verConsole
-		public static const COLLISION_DEBUG:Boolean = true; // debug that draws useful red dots and boxes for collision detection
+		public static const DEBUG:Boolean = false; // overall debug mode - enables verConsole
+		public static const COLLISION_DEBUG:Boolean = false; // debug that draws useful red dots and boxes for collision detection
 		public static const UI_DEBUG:Boolean = false; // debug specifically for UI - draws boxes where appropriate
 		public static const A3D_DEBUG:Boolean = false; // debug specifically for 3D - draws the 3D axises
 

@@ -17,7 +17,11 @@ package VerlocityEngine.base.ents
 	import VerlocityEngine.util.mathHelper;
 
 	public class verBEnt extends verBScreenObject
-	{
+	{		
+		private var iID:int = -1;
+		public function get id():int { return iID; }
+		public function set id( iSetID:int ):void { iID = iSetID; }
+
 		public function verBEnt():void
 		{
 			stop();
@@ -69,6 +73,7 @@ package VerlocityEngine.base.ents
 			sLayer = layer;
 			
 			play();
+			ResumeThink();
 			
 			bIsSpawned = true;
 			spawnX = x; spawnY = y;
@@ -126,11 +131,23 @@ package VerlocityEngine.base.ents
 		{
 			return parent;
 		}
-		
-		private var iID:int = -1;
-		public function get id():int { return iID; }
-		public function set id( iSetID:int ):void { iID = iSetID; }
 
+		private var bIsThinking:Boolean;
+		public function ResumeThink():void
+		{
+			bIsThinking = true;
+		}
+
+		public function PauseThink():void
+		{
+			bIsThinking = false;
+		}
+		
+		public function IsThinking():Boolean
+		{
+			return bIsThinking;
+		}
+		
 
 
 		/*
